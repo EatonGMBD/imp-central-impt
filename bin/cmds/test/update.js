@@ -78,7 +78,7 @@ exports.builder = function (yargs) {
         [Options.TEST_FILE] : {
             demandOption : false,
             describe : 'Test file name or pattern. All files located in the current directory and all its sub-directories' +
-                ' whose names match the specified name or pattern are considered as files with test cases.' + 
+                ' whose names match the specified name or pattern are considered as files with test cases.' +
                 ' The specified values fully replace the existed setting.'
         },
         [Options.GITHUB_CONFIG] : {
@@ -89,6 +89,15 @@ exports.builder = function (yargs) {
             nargs: 0,
             default : undefined,
             _usage: '[<github_credentials_file_name>]'
+        },
+        [Options.BITBUCKET_SERVER_CONFIG] : {
+            demandOption : false,
+            describe : 'A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist.' +
+                ' Specify this option without a value to remove a Bitbucket Server credentials file from the test configuration.',
+            requiresArg : false,
+            nargs: 0,
+            default : undefined,
+            _usage: '[<bitbucket_server_credentials_file_name>]'
         },
         [Options.BUILDER_CONFIG] : {
             demandOption : false,

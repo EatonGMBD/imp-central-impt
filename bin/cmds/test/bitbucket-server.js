@@ -26,13 +26,13 @@
 
 const Test = require('../../../lib/Test');
 const Options = require('../../../lib/util/Options');
-const Util = require('util');
+const Errors = require('../../../lib/util/Errors');
+const UserInteractor = require('../../../lib/util/UserInteractor');
 
-const COMMAND = 'delete';
+const COMMAND = 'bitbucket-server';
 const COMMAND_SECTION = 'test';
-const COMMAND_SHORT_DESCR = 'Deletes the test configuration file.';
-const COMMAND_DESCRIPTION = 'Deletes the test configuration file in the current directory.' +
-    ' Does nothing if there is no test configuration file in the current directory.';
+const COMMAND_SHORT_DESCR = 'Creates or updates a Bitbucket Server configuration file.';
+const COMMAND_DESCRIPTION = COMMAND_SHORT_DESCR;
 
 exports.command = COMMAND;
 
@@ -41,44 +41,24 @@ exports.describe = COMMAND_SHORT_DESCR;
 exports.builder = function (yargs) {
     const options = Options.getOptions({
         [Options.ACCOUNT] : false,
-        [Options.GITHUB_CONFIG] : {
-            demandOption : false,
-            nargs : 0,
-            type : 'boolean',
-            noValue : true,
-            default : undefined,
-            requiresArg : false,
-            _usage: '',
-            describe : 'Also deletes the GitHub credentials file referenced by test configuration file.'
-        },
         [Options.BITBUCKET_SERVER_CONFIG] : {
-            demandOption : false,
-            nargs : 0,
-            type : 'boolean',
-            noValue : true,
-            default : undefined,
-            requiresArg : false,
-            _usage: '',
-            describe : 'Also deletes the Bitbucket Server credentials file referenced by test configuration file.'
+            demandOption : true,
+            describe : 'A path to the Bitbucket Server configuration file. A relative or absolute path can be used.'
         },
-        [Options.BUILDER_CONFIG] : {
+        [Options.BITBUCKET_SERVER_ADDRESS] : {
             demandOption : false,
-            nargs: 0,
-            type : 'boolean',
-            noValue : true,
-            default : undefined,
-            requiresArg : false,
-            _usage: '',
-            describe : 'Also deletes the file with Builder variables referenced by test configuration file.'
+            describe : 'A Bitbucket Server address. E.g., "https://bitbucket-srv.itd.example.com"',
+            _usage: '<bitbucket_server_address>'
         },
-        [Options.ENTITIES] : {
+        [Options.USER] : {
             demandOption : false,
-            describe: 'Also deletes the impCentral API entities (Device Group, Product, Deployments) referenced by test configuration file.'
+            describe : 'A Bitbucket Server account username.',
+            _usage: '<bitbucket_server_username>'
         },
-        [Options.ALL] : {
+        [Options.PASSWORD] : {
             demandOption : false,
-            describe: Util.format('Includes --%s, --%s, --%s and --%s options.',
-                Options.GITHUB_CONFIG, Options.BITBUCKET_SERVER_CONFIG, Options.BUILDER_CONFIG, Options.ENTITIES)
+            describe : 'A Bitbucket Server account password or personal access token.',
+            _usage: '<bitbucket_server_password>'
         },
         [Options.CONFIRMED] : false,
         [Options.OUTPUT] : false
@@ -87,6 +67,11 @@ exports.builder = function (yargs) {
         .usage(Options.getUsage(COMMAND_SECTION, COMMAND, COMMAND_DESCRIPTION, Options.getCommandOptions(options)))
         .options(options)
         .check(function (argv) {
+            const opts = new Options(argv);
+            if (opts.bitbucketSrvAddr)
+            if (opts.user === undefined && opts.password) {
+                return new Errors.CommandSyntaxError(UserInteractor.ERRORS.CMD_COOPERATIVE_OPTIONS, Options.PASSWORD, Options.USER);
+            }
             return Options.checkOptions(argv, options);
         })
         .strict();
@@ -94,5 +79,5 @@ exports.builder = function (yargs) {
 
 exports.handler = function (argv) {
     const options = new Options(argv);
-    new Test(options).delete(options);
+    new Test(options).bitbucketSrv(options);
 };

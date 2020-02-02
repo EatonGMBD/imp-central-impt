@@ -82,6 +82,10 @@ exports.builder = function (yargs) {
             demandOption : false,
             describe : 'A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist.'
         },
+        [Options.BITBUCKET_SERVER_CONFIG] : {
+            demandOption : false,
+            describe : 'A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist.'
+        },
         [Options.BUILDER_CONFIG] : {
             demandOption : false,
             describe : 'A path to a file with Builder variables. A relative or absolute path can be used. The specified file may not exist.'
