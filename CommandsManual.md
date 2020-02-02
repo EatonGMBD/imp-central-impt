@@ -630,7 +630,7 @@ Adds Bitbucket Server address and credentials to the auth file.
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --local | -l | No | No | If specified, creates or replaces a [local auth file](#local-auth-file) in the current directory. If not specified, creates or replaces the [global auth file](#global-auth-file) |
-| --bitbucket-srv-addr | -a | No | Yes | a Bitbucket Server account username |
+| --bitbucket-srv-addr | -a | No | Yes | a Bitbucket Server address. E.g., "https://bitbucket-srv.itd.example.com" |
 | --user | -u | No | Yes | a Bitbucket Server account username |
 | --pwd | -w | No | Yes | a Bitbucket Server account password or personal access token |
 | --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
@@ -1689,6 +1689,7 @@ If the `--user` option is not specified, the user is asked to input the Bitbucke
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --bitbucket-srv-config | -b | Yes | Yes | A path to the Bitbucket Server credentials file. A relative or absolute path can be used |
+| --bitbucket-srv-addr | -a | No | Yes | A Bitbucket Server address. E.g., "https://bitbucket-srv.itd.example.com" |
 | --user | -u | No | Yes | A Bitbucket Server account username |
 | --pwd | -w | No | Yes | A Bitbucket Server account password or personal access token. If specified, the `--user` option must also be specified |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
