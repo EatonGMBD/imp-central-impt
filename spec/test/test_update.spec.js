@@ -65,7 +65,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
         }
 
         describe(`test update positive tests >`, () => {
-            it('test update all attrs', (done) => {
+            xit('test update all attrs', (done) => {
                 ImptTestHelper.runCommand(`impt test update -x devicecode.nut -y agentcode.nut -f testfile.nut -f testfile2.nut -i github.impt -j builder.impt  -t 20 -s -a -e ${outputMode}`, ImptTestHelper.checkSuccessStatus).
                     then(() => ImptTestCommandsHelper.checkTestInfo({
                         timeout: 20, stopOnFailure: true,
@@ -78,7 +78,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     catch(error => done.fail(error));
             });
 
-            it('test update remove attrs', (done) => {
+            xit('test update remove attrs', (done) => {
                 ImptTestHelper.runCommand(`impt test update -x -y -i -j ${outputMode}`, (commandOut) => {
                     expect(outputMode.output).not.toMatch('Device file');
                     expect(outputMode.output).not.toMatch('Agent file');
@@ -91,7 +91,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
         });
 
         describe(`test create negative tests >`, () => {
-            it('test update to not exist dg', (done) => {
+            xit('test update to not exist dg', (done) => {
                 ImptTestHelper.runCommand(`impt test update -g not-exist-dg ${outputMode}`, (commandOut) => {
                     MessageHelper.checkEntityNotFoundError(commandOut, MessageHelper.DG, 'not-exist-dg');
                     ImptTestHelper.checkFailStatus(commandOut);
@@ -100,7 +100,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     catch(error => done.fail(error));
             });
 
-            it('test update to not exist device file', (done) => {
+            xit('test update to not exist device file', (done) => {
                 ImptTestHelper.runCommand(`impt test update -x not-exist-file ${outputMode}`, (commandOut) => {
                     MessageHelper.checkEntityNotFoundError(commandOut, UserInterractor.MESSAGES.TEST_DEVICE_FILE, 'not-exist-file');
                     ImptTestHelper.checkFailStatus(commandOut);
@@ -109,7 +109,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     catch(error => done.fail(error));
             });
 
-            it('test update to not exist agent file', (done) => {
+            xit('test update to not exist agent file', (done) => {
                 ImptTestHelper.runCommand(`impt test update -y not-exist-file ${outputMode}`, (commandOut) => {
                     MessageHelper.checkEntityNotFoundError(commandOut, UserInterractor.MESSAGES.TEST_AGENT_FILE, 'not-exist-file');
                     ImptTestHelper.checkFailStatus(commandOut);

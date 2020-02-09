@@ -62,7 +62,8 @@ describe('impt test run for timeout behavior >', () => {
 
     // checks that timeout is applied to every test method, not to the whole session
     it('run test with appropriate timeout', (done) => {
-        ImptTestCommandsHelper.createTestConfig('fixtures/timeout', { 'timeout': 10 }).
+        ImptTestHelper.runCommand('impt test delete -q', ImptTestHelper.checkSuccessStatus).
+            then(() => ImptTestCommandsHelper.createTestConfig('fixtures/timeout', { 'timeout': 10 })).
             then(() => ImptTestHelper.runCommand('impt test run', (commandOut) => {
                 expect(commandOut.output).not.toBeEmptyString();
                 ImptTestCommandsHelper.checkTestSuccessStatus(commandOut);
