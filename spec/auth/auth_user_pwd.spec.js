@@ -42,6 +42,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
     describe(`impt auth login by user/password test suite  (output: ${outputMode ? outputMode : 'default'}) >`, () => {
         const auth = `--user ${config.username} --pwd "${config.password}"`;
         const endpoint = config.apiEndpoint ? `${config.apiEndpoint}` : `${DEFAULT_ENDPOINT}`;
+        const isDefaultEndpoint = endpoint === DEFAULT_ENDPOINT;
 
         beforeAll((done) => {
             ImptTestHelper.init(false).
@@ -115,25 +116,37 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                 }, ImptTestHelper.TIMEOUT);
 
                 it('global login', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login  ${auth} ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login  ${auth} ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
 
                 it('global login with confirm', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
 
                 it('global temp login temporarily', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login  ${auth} --temp ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login  ${auth} --temp ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
 
                 it('global temp login with confirm', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
@@ -171,25 +184,37 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                 }, ImptTestHelper.TIMEOUT);
 
                 it('local login', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login -l ${auth} ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login -l ${auth} ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
 
                 it('local login with confirm', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login -l  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login -l  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
 
                 it('local temp login temporarily', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login -l  ${auth} -t ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login -l  ${auth} -t ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
 
                 it('local temp login with confirm', (done) => {
-                    ImptTestHelper.runCommand(`impt auth login -l  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                    const runCommand = isDefaultEndpoint ?
+                        ImptTestHelper.runCommand(`impt auth login -l  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                        Promise.resolve();
+                    runCommand.
                         then(done).
                         catch(error => done.fail(error));
                 });
@@ -229,13 +254,19 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             }, ImptTestHelper.TIMEOUT);
 
             it('repeat global login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
 
             it('repeat global temp login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -290,7 +321,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
 
         describe('Tests with global temp auth preconditions >', () => {
             beforeAll((done) => {
-                ImptTestHelper.runCommand(`impt auth login ${auth} -t -q`, ImptTestHelper.emptyCheck).
+                ImptTestHelper.runCommand(`impt auth login ${auth} -e ${endpoint} -t -q`, ImptTestHelper.emptyCheck).
                     then(ImptAuthCommandsHelper.localLogout).
                     then(done).
                     catch(error => done.fail(error));
@@ -306,7 +337,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             });
             describe('Tests with global temp auth preconditions and restore >', () => {
                 afterEach((done) => {
-                    ImptTestHelper.runCommand(`impt auth login ${auth} -t -q`, ImptTestHelper.emptyCheck).
+                    ImptTestHelper.runCommand(`impt auth login ${auth} -e ${endpoint} -t -q`, ImptTestHelper.emptyCheck).
                         then(ImptAuthCommandsHelper.localLogout).
                         then(done).
                         catch(error => done.fail(error));
@@ -362,13 +393,19 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             }, ImptTestHelper.TIMEOUT);
 
             it('repeat local login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login -l  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login -l  ${auth} -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
 
             it('repeat local temp login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login -l  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login -l  ${auth} -t -q ${outputMode}`, ImptTestHelper.checkSuccessStatus) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });

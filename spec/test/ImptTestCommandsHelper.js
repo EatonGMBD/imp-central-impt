@@ -111,7 +111,10 @@ class ImptTestCommandsHelper {
     // Check test info
     static checkTestInfo(expectInfo = {}) {
         return ImptTestHelper.runCommand(`impt test info -z json`, (commandOut) => {
-            const json = JSON.parse(commandOut.output);
+            let json = JSON.parse(commandOut.output);
+            if (Array.isArray(json)) {
+                json = json[json.length - 1];
+            }
             expect(json['Test Configuration']).toBeDefined;
             // Mandatory attrs check
             (expectInfo.testFiles ? expectInfo.testFiles : ["*.test.nut", "tests/**/*.test.nut"]).map(testFile =>

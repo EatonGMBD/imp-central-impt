@@ -39,6 +39,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
     describe(`impt auth login by loginkey test suite  (output: ${outputMode ? outputMode : 'default'}) >`, () => {
         const auth = `--user ${config.username} --pwd "${config.password}"`;
         const endpoint = config.apiEndpoint ? `${config.apiEndpoint}` : `${DEFAULT_ENDPOINT}`;
+        const isDefaultEndpoint = endpoint === DEFAULT_ENDPOINT;
         let loginkey = null;
 
         beforeAll((done) => {
@@ -81,25 +82,34 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             }, ImptTestHelper.TIMEOUT);
 
             it('global login by loginkey', (done) => {
-                ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} ${outputMode}`,
-                    ImptTestHelper.checkSuccessStatus).
-                    then(_checkLoginInfo).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} ${outputMode}`,
+                        ImptTestHelper.checkSuccessStatus).
+                        then(_checkLoginInfo) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
 
             it('global temp login by loginkey', (done) => {
-                ImptTestHelper.runCommand(`impt auth login --temp --lk ${loginkey} ${outputMode}`,
-                    ImptTestHelper.checkSuccessStatus).
-                    then(() => _checkLoginInfo({ refresh: 'false' })).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login --temp --lk ${loginkey} ${outputMode}`,
+                        ImptTestHelper.checkSuccessStatus).
+                        then(() => _checkLoginInfo({ refresh: 'false' })) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
 
             it('local temp login by loginkey', (done) => {
-                ImptTestHelper.runCommand(`impt auth login --temp --local --lk ${loginkey} ${outputMode}`,
-                    ImptTestHelper.checkSuccessStatus).
-                    then(() => _checkLoginInfo({ auth: 'Local Auth file', refresh: 'false' })).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login --temp --local --lk ${loginkey} ${outputMode}`,
+                        ImptTestHelper.checkSuccessStatus).
+                        then(() => _checkLoginInfo({ auth: 'Local Auth file', refresh: 'false' })) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -154,9 +164,12 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             }, ImptTestHelper.TIMEOUT);
 
             it('repeated global temp login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login --temp --lk ${loginkey} -q ${outputMode}`,
-                    ImptTestHelper.checkSuccessStatus).
-                    then(() => _checkLoginInfo({ refresh: 'false' })).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login --temp --lk ${loginkey} -q ${outputMode}`,
+                        ImptTestHelper.checkSuccessStatus).
+                        then(() => _checkLoginInfo({ refresh: 'false' })) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -170,7 +183,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             });
 
             it('repeated local temp login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login --temp --local --lk ${loginkey} -q ${outputMode}`,
+                ImptTestHelper.runCommand(`impt auth login --temp --local --endpoint ${endpoint} --lk ${loginkey} -q ${outputMode}`,
                     ImptTestHelper.checkSuccessStatus).
                     then(() => _checkLoginInfo({ auth: 'Local Auth file', refresh: 'false' })).
                     then(done).
@@ -194,9 +207,12 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             }, ImptTestHelper.TIMEOUT);
 
             it('repeated global login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login ${auth} -q ${outputMode}`,
-                    ImptTestHelper.checkSuccessStatus).
-                    then(_checkLoginInfo).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login ${auth} -q ${outputMode}`,
+                        ImptTestHelper.checkSuccessStatus).
+                        then(_checkLoginInfo) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -210,7 +226,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             });
 
             it('repeated global temp login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login --temp ${auth} -q ${outputMode}`,
+                ImptTestHelper.runCommand(`impt auth login --endpoint ${endpoint} --temp ${auth} -q ${outputMode}`,
                     ImptTestHelper.checkSuccessStatus).
                     then(() => _checkLoginInfo({ refresh: 'false' })).
                     then(done).
@@ -218,9 +234,12 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             });
 
             it('repeated local login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login -l ${auth} -q ${outputMode}`,
-                    ImptTestHelper.checkSuccessStatus).
-                    then(() => _checkLoginInfo({ auth: 'Local Auth file' })).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth login -l ${auth} -q ${outputMode}`,
+                        ImptTestHelper.checkSuccessStatus).
+                        then(() => _checkLoginInfo({ auth: 'Local Auth file' })) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -234,7 +253,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             });
 
             it('repeated local temp login with confirm', (done) => {
-                ImptTestHelper.runCommand(`impt auth login -l --temp ${auth} -q ${outputMode}`,
+                ImptTestHelper.runCommand(`impt auth login -l --endpoint ${endpoint} --temp ${auth} -q ${outputMode}`,
                     ImptTestHelper.checkSuccessStatus).
                     then(() => _checkLoginInfo({ auth: 'Local Auth file', refresh: 'false' })).
                     then(done).
@@ -286,9 +305,9 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             });
         });
 
-        describe('Tests with global temp loginkey auth preconditions >', () => {
+        describe('Tests with global temp loginkey and endpoint auth preconditions >', () => {
             beforeAll((done) => {
-                ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} -t -q`, ImptTestHelper.emptyCheck).
+                ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} -e ${endpoint} -t -q`, ImptTestHelper.emptyCheck).
                     then(ImptAuthCommandsHelper.localLogout).
                     then(done).
                     catch(error => done.fail(error));

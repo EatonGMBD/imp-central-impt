@@ -39,6 +39,7 @@ const DEFAULT_ENDPOINT = 'https://api.electricimp.com/v5';
 ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
     describe(`impt auth using environment variables test suite (output: ${outputMode ? outputMode : 'default'}) >`, () => {
         const endpoint = config.apiEndpoint ? `${config.apiEndpoint}` : `${DEFAULT_ENDPOINT}`;
+        const isDefaultEndpoint = endpoint === DEFAULT_ENDPOINT;
         let loginkey = null;
         let email = null;
         let userid = null;
@@ -117,11 +118,14 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             });
 
             it('auth loginkey env info', (done) => {
-                ImptTestHelper.runCommand(`impt auth info ${outputMode}`,
-                    (commandOut) => {
-                        _checkLoginInfo(commandOut, { auth: 'Environment variables', method: 'Login Key' });
-                        ImptTestHelper.checkSuccessStatus(commandOut);
-                    }, { 'IMPT_LOGINKEY': loginkey }).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth info ${outputMode}`,
+                        (commandOut) => {
+                            _checkLoginInfo(commandOut, { auth: 'Environment variables', method: 'Login Key' });
+                            ImptTestHelper.checkSuccessStatus(commandOut);
+                        }, { 'IMPT_LOGINKEY': loginkey }) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -141,17 +145,20 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     (commandOut) => {
                         _checkLoginInfo(commandOut, { auth: 'Environment variables', method: 'Login Key' });
                         ImptTestHelper.checkSuccessStatus(commandOut);
-                    }, { 'IMPT_LOGINKEY': loginkey, 'IMPT_USER': config.username }).
+                    }, { 'IMPT_LOGINKEY': loginkey, 'IMPT_USER': config.username, 'IMPT_ENDPOINT': endpoint }).
                     then(done).
                     catch(error => done.fail(error));
             });
 
             it('auth user pass env info', (done) => {
-                ImptTestHelper.runCommand(`impt auth info ${outputMode}`,
-                    (commandOut) => {
-                        _checkLoginInfo(commandOut, { auth: 'Environment variables' });
-                        ImptTestHelper.checkSuccessStatus(commandOut);
-                    }, { 'IMPT_USER': config.username, 'IMPT_PASSWORD': config.password }).
+                const runCommand = isDefaultEndpoint ?
+                    ImptTestHelper.runCommand(`impt auth info ${outputMode}`,
+                        (commandOut) => {
+                            _checkLoginInfo(commandOut, { auth: 'Environment variables' });
+                            ImptTestHelper.checkSuccessStatus(commandOut);
+                        }, { 'IMPT_USER': config.username, 'IMPT_PASSWORD': config.password }) :
+                    Promise.resolve();
+                runCommand.
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -204,7 +211,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     (commandOut) => {
                         _checkLoginInfo(commandOut, { auth: 'Environment variables', method: 'Login Key' });
                         ImptTestHelper.checkSuccessStatus(commandOut);
-                    }, { 'IMPT_LOGINKEY': loginkey }).
+                    }, { 'IMPT_LOGINKEY': loginkey, 'IMPT_ENDPOINT': endpoint }).
                     then(done).
                     catch(error => done.fail(error));
             });
@@ -214,7 +221,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     (commandOut) => {
                         _checkLoginInfo(commandOut, { auth: 'Environment variables' });
                         ImptTestHelper.checkSuccessStatus(commandOut);
-                    }, { 'IMPT_USER': config.username, 'IMPT_PASSWORD': config.password }).
+                    }, { 'IMPT_USER': config.username, 'IMPT_PASSWORD': config.password, 'IMPT_ENDPOINT': endpoint }).
                     then(done).
                     catch(error => done.fail(error));
             });
