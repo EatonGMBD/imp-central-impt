@@ -40,22 +40,26 @@ class ImptAuthCommandsHelper {
     }
 
     static localLogin() {
-        return ImptTestHelper.runCommand(`impt auth login --local --user ${config.username} --pwd "${config.password}" --confirmed`,
+        const endpoint = config.apiEndpoint ? `--endpoint ${config.apiEndpoint}` : '';
+        return ImptTestHelper.runCommand(`impt auth login --local --user ${config.username} --pwd "${config.password}" ${endpoint} --confirmed`,
             ImptTestHelper.emptyCheck);
     }
 
     static globalLogin() {
-        return ImptTestHelper.runCommand(`impt auth login --user ${config.username} --pwd "${config.password}" --confirmed`,
+        const endpoint = config.apiEndpoint ? `--endpoint ${config.apiEndpoint}` : '';
+        return ImptTestHelper.runCommand(`impt auth login --user ${config.username} --pwd "${config.password}" ${endpoint} --confirmed`,
             ImptTestHelper.emptyCheck);
     }
 
     static globalLoginByLoginkey(loginkey) {
-        return ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} --confirmed`,
+        const endpoint = config.apiEndpoint ? `--endpoint ${config.apiEndpoint}` : '';
+        return ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} ${endpoint} --confirmed`,
             ImptTestHelper.emptyCheck);
     }
 
     static localLoginByLoginkey(loginkey) {
-        return ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} --local --confirmed`,
+        const endpoint = config.apiEndpoint ? `--endpoint ${config.apiEndpoint}` : '';
+        return ImptTestHelper.runCommand(`impt auth login --lk ${loginkey} ${endpoint} --local --confirmed`,
             ImptTestHelper.emptyCheck);
     }
 

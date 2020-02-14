@@ -216,8 +216,8 @@ class ImptTestHelper {
     static checkFileEqual(fileName, fileName2) {
         expect(Shell.test('-e', `${TESTS_EXECUTION_FOLDER}/${fileName}`)).toBe(true);
         expect(Shell.test('-e', `${TESTS_EXECUTION_FOLDER}/${fileName2}`)).toBe(true);
-        let file = Shell.cat(`${TESTS_EXECUTION_FOLDER}/${fileName}`);
-        let file2 = Shell.cat(`${TESTS_EXECUTION_FOLDER}/${fileName2}`);
+        let file = Shell.cat(`${TESTS_EXECUTION_FOLDER}/${fileName}`).trim();
+        let file2 = Shell.cat(`${TESTS_EXECUTION_FOLDER}/${fileName2}`).trim();
         expect(file).toEqual(file2);
     }
 

@@ -1,9 +1,9 @@
 {
- 
-  "deviceGroupId": "not-exist-device-group",
-
-  "deviceFile": "device.nut",
-
-  "agentFile": "agent.nut"
-
+  "deviceGroups": {
+    "not-exist-device-group": {
+      "deviceFile": "device.nut",
+      "agentFile": "agent.nut",
+      "isDefault": true
+    }
+  }
 }

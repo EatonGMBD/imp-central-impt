@@ -80,7 +80,10 @@ describe(`impt test info tests (output: ${outputMode ? outputMode : 'default'}) 
 
         it('test info', (done) => {
             ImptTestHelper.runCommand(`impt test info ${outputMode}`, (commandOut) => {
-                const json = JSON.parse(commandOut.output);
+                let json = JSON.parse(commandOut.output);
+                if (Array.isArray(json)) {
+                    json = json[json.length - 1];
+                }
                 expect(json['Test Configuration']).toBeDefined;
                 (["testfile.nut", "testfile2.nut"]).map(testFile =>
                     expect(json['Test Configuration']['Test files']).toContain(testFile));
