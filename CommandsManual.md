@@ -865,16 +865,16 @@ impt device assign [--account <account_id>] --device <DEVICE_IDENTIFIER> [--dg <
     [--confirmed] [--output <mode>] [--help]
 ```
 
-Assigns the specified device to the specified Device Group. Fails if the specified Device Group does not exist.
+Assigns the specified devices to the specified Device Group. Fails if the specified Device Group does not exist.
 
-The user is asked to confirm the operation if the specified Device is already assigned to another Device Group. If the operation is confirmed (manually or automatically with the `--confirmed` option), the device is reassigned to the new Device Group.
+The user is asked to confirm the operation if a specified device is already assigned to another Device Group. If the operation is confirmed (manually or automatically with the `--confirmed` option), the device is reassigned to the new Device Group.
 
-The operation may fail for some combinations of Device Group [types](#device-group-type), for some kinds of device, or operations such as reassigning across Products.
+The operation may fail for some combinations of Device Group [types](#device-group-type), for some kinds of device, or operations such as reassigning across Products. It is not an atomic operation - it is possible for some of the specified devices to be assigned and other devices to fail to be assigned.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | The [device identifier](#device-identifier) of Device to be assigned. This option may be repeated multiple times to specify multiple Devices |
 | --dg | -g | Yes/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). If not specified, the Device Group referenced by the [Project Files](#project-files) in the current directory is used (if there is no Project file, the command fails) |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -968,12 +968,14 @@ Reboots the specified device and, optionally, starts displaying logs from it.
 impt device unassign [--account <account_id>] --device <DEVICE_IDENTIFIER> [--unbond <unbond_key>] [--output <mode>] [--help]
 ```
 
-Unassigns the specified device. Does nothing if the device already unassigned.
+Unassigns the specified devices. Does nothing if a device is already unassigned.
+
+It is not an atomic operation — it is possible for some of the specified devices to be unassigned and other devices to fail to be unassigned.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | The [device identifier](#device-identifier) of Device to be unassigned. This option may be repeated multiple times to specify multiple Devices |
 | --unbond | -u | No | Yes | An unbond key is required to unassign the specified device from a Device Group of the *production* [type](#device-group-type) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
