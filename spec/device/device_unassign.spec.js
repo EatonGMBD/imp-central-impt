@@ -79,7 +79,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
         function _checkSuccessUnassignedDeviceMessage(commandOut, device) {
             ImptTestHelper.checkOutputMessage(`${outputMode}`, commandOut,
                 Util.format(`${UserInterractor.MESSAGES.DEVICE_UNASSIGNED}`,
-                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE} "${device}"`)
+                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE}(s) "${device}"`)
             );
         }
 
@@ -87,7 +87,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
         function _checkAlreadyUnassignedDeviceMessage(commandOut, device) {
             ImptTestHelper.checkOutputMessage(`${outputMode}`, commandOut,
                 Util.format(`${UserInterractor.MESSAGES.DEVICE_ALREADY_UNASSIGNED}`,
-                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE} "${device}"`)
+                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE}(s) "${device}"`)
             );
         }
 
@@ -148,9 +148,21 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     then(done).
                     catch(error => done.fail(error));
             });
+
+            it('unassign multiple devices', (done) => {
+                const devices = Array(3).fill(config.devices[config.deviceidx]).
+                    map((device) => `-d ${device}`).join(' ');
+                ImptTestHelper.runCommand(`impt device unassign ${devices} ${outputMode}`, (commandOut) => {
+                    _checkSuccessUnassignedDeviceMessage(commandOut, config.devices[config.deviceidx]);
+                    ImptTestHelper.checkSuccessStatus(commandOut);
+                }).
+                    then(() => _checkUnassignDevice).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
         });
 
-        describe('device unassign positive tests >', () => {
+        describe('device unassign negative tests >', () => {
             it('unassign not exist device', (done) => {
                 ImptTestHelper.runCommand(`impt device unassign -d not-exist-device ${outputMode}`, (commandOut) => {
                     MessageHelper.checkEntityNotFoundError(commandOut, MessageHelper.DEVICE, 'not-exist-device');
