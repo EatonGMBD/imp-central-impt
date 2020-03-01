@@ -76,7 +76,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
         function _checkLogStreamOpenedMessage(commandOut, device) {
             ImptTestHelper.checkOutputMessage(`${outputMode}`, commandOut,
                 Util.format(`${UserInterractor.MESSAGES.LOG_STREAM_OPENED}`,
-                    `${device}`
+                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE}(s) "${device}"`
                 )
             );
         }
