@@ -14,5 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `impt test bitbucket-server` command
   - Using Bitbucket Server credentials from a file or environment variables during test deployment creation
   - Using Bitbucket Server credentials from auth file or environment variables during deployment creation
+- Logs are colorized (similar to impCentral IDE) in the default and "debug" output modes
+- `--device` (`-d`) option may be repeated several times to specify multiple devices in
+  - `impt device assign` command
+  - `impt device unassign` command
+- VSCode clickable links in the output with compilation errors for
+  - `impt build run` command
+  - `impt build deploy` command
+
+### Changed ###
+
+- "global-agent" NodeJS module is used for logs streaming over proxy
+- NodeJS version 10+ is required
+
+### Fixed ###
+
+- Many various issues to make all tests passed
 
 ## [Released] ##
