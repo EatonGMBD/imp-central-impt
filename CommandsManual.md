@@ -930,16 +930,18 @@ The returned list of the devices may be filtered. Filtering uses any combination
 impt device remove [--account <account_id>] --device <DEVICE_IDENTIFIER> [--force] [--confirmed] [--output <mode>] [--help]
 ```
 
-Removes the specified Device from the current account.
+Removes the specified Devices from the current account.
 
-The command fails if the device is assigned to a Device Group and the `--force` option is not specified. Use either `--force` or [`impt device unassign`](#device-unassign) to unassign the device before removal.
+The command fails if a device is assigned to a Device Group and the `--force` option is not specified. Use either `--force` or [`impt device unassign`](#device-unassign) to unassign devices before removal.
 
 The user is asked to confirm the operation, unless confirmed automatically with the `--confirmed` option.
+
+It is not an atomic operation - it is possible for some of the specified devices to be removed and other devices to fail to be removed.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | A [device identifier](#device-identifier) of Device to be removed. This option may be repeated multiple times to specify multiple Devices |
 | --force | -f | No | No | If the device is assigned to a Device Group, unassign it first |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
