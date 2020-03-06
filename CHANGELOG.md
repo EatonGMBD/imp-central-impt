@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--device` (`-d`) option may be repeated several times to specify multiple devices in
   - `impt device assign` command
   - `impt device unassign` command
+  - `impt device remove` command
 - VSCode clickable links in the output with compilation errors for
   - `impt build run` command
   - `impt build deploy` command
