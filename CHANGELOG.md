@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - "global-agent" NodeJS module is used for logs streaming over proxy
 - NodeJS version 10+ is required
+- "yargs" module version 10.0.3 is used
 
 ### Fixed ###
 
