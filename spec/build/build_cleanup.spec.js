@@ -221,7 +221,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     catch(error => done.fail(error));
             }, ImptTestHelper.TIMEOUT);
 
-            it('build cleanup by product id', (done) => {
+            xit('build cleanup by product id', (done) => {
                 ImptTestHelper.runCommand(`impt build cleanup --product ${product_id} -q ${outputMode}`, (commandOut) => {
                     _checkSuccessDeleteDeploymentMessage(commandOut, build2_id);
                     ImptTestHelper.checkSuccessStatus(commandOut);
@@ -238,7 +238,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     catch(error => done.fail(error));
             });
 
-            it('flagged build cleanup by product name', (done) => {
+            xit('flagged build cleanup by product name', (done) => {
                 ImptTestHelper.runCommand(`impt build cleanup --product ${PRODUCT_NAME} -u -q ${outputMode}`, (commandOut) => {
                     _checkSuccessUpdatedDeploymentMessage(commandOut, build_id);
                     _checkSuccessDeleteDeploymentMessage(commandOut, build_id);
@@ -257,7 +257,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     catch(error => done.fail(error));
             });
 
-            it('build cleanup', (done) => {
+            xit('build cleanup', (done) => {
                 ImptTestHelper.runCommand(`impt build cleanup -q ${outputMode}`, (commandOut) => {
                     _checkSuccessDeleteDeploymentMessage(commandOut, build2_id);
                     _checkSuccessDeleteDeploymentMessage(commandOut, build4_id);
@@ -274,7 +274,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     catch(error => done.fail(error));
             });
 
-            it('flagged build cleanup', (done) => {
+            xit('flagged build cleanup', (done) => {
                 ImptTestHelper.runCommand(`impt build cleanup -u -q ${outputMode}`, (commandOut) => {
                     _checkSuccessUpdatedDeploymentMessage(commandOut, build_id);
                     _checkSuccessUpdatedDeploymentMessage(commandOut, build3_id);
