@@ -65,11 +65,43 @@ describe(`impt log get test suite (output: ${outputMode ? outputMode : 'default'
             then(() => ImptTestHelper.delayMs(10000));
     }
 
-    function _checkLogMessages(commandOut, messages = {}) {
-        let matcher = commandOut.output.match(new RegExp(/....-..-..T..:..:../g));
-        expect(matcher).not.toBeNull();
-        expect(matcher.length).toEqual(messages.count);
-        // if output contains non server.log messages change message start nuber
+    function _checkLogMessages(commandOut, messages = {}, tsFormat = 'full') {
+        let tsRegExp = null;
+        let messagesCount = messages.count;
+        const fullTsRegExp = new RegExp(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}/g);
+        switch (tsFormat) {
+            case '':
+            case 'full':
+                tsRegExp = fullTsRegExp;
+                break;
+            case 'min-ts':
+                tsRegExp = new RegExp(/\d{2}:\d{2}:\d{2}\.\d{3}/g);
+                break;
+            case 'delta-ts':
+                tsRegExp = new RegExp(/(\+|-)(\d+:)?(\d{2}:)?\d{2}\.\d{3}/g);
+                messagesCount = messages.count - 1;
+                break;
+            case 'epoch-ts':
+                const digits = new Date().getTime().toString().length;
+                tsRegExp = new RegExp('\\d{' + digits + '}', 'g');
+                break;
+        }
+        let matcher;
+        if (tsRegExp) {
+            matcher = commandOut.output.match(tsRegExp);
+            expect(matcher).not.toBeNull();
+            expect(matcher.length).toEqual(messagesCount);
+        }
+        if (tsFormat === 'delta-ts') {
+            matcher = commandOut.output.match(fullTsRegExp);
+            expect(matcher).not.toBeNull();
+            expect(matcher.length).toEqual(1);
+        }
+        if (tsFormat === 'no-ts') {
+            const messages = commandOut.output.split(/\r?\n/).slice(0, messagesCount);
+            expect(messages.every(msg => msg.startsWith('['))).toBeTrue();
+        }
+        // if output contains non server.log messages change message start number
         matcher = commandOut.output.match(new RegExp(/server\.log/g));
         if (matcher.length < messages.count) {
             messages.startNumber = messages.startNumber + (messages.count - matcher.length);
@@ -81,6 +113,14 @@ describe(`impt log get test suite (output: ${outputMode ? outputMode : 'default'
     // delete all entities using in impt log get test suite
     function _testSuiteCleanUp() {
         return ImptTestHelper.productDelete(PRODUCT_NAME);
+    }
+
+    function _testTsFormat(tsFormat) {
+        return ImptTestHelper.runCommandInteractive(
+            `impt log get -d ${config.devices[config.deviceidx]} --log ${tsFormat} ${outputMode}`, (commandOut) => {
+                _checkLogMessages(commandOut, { startNumber: 1, endNumber: 20, count: 20 }, tsFormat);
+                ImptTestHelper.checkSuccessStatus(commandOut);
+            });
     }
 
     describe('log get positive tests >', () => {
@@ -155,6 +195,42 @@ describe(`impt log get test suite (output: ${outputMode ? outputMode : 'default'
                 _checkLogMessages(commandOut, { startNumber: 6, endNumber: 10, count: 5 });
                 ImptTestHelper.checkSuccessStatus(commandOut);
             }).
+                then(done).
+                catch(error => done.fail(error));
+        });
+
+        it('log get with full ts', (done) => {
+            _testTsFormat('full').
+                then(done).
+                catch(error => done.fail(error));
+        });
+
+        it('log get without ts value', (done) => {
+            _testTsFormat('').
+                then(done).
+                catch(error => done.fail(error));
+        });
+
+        it('log get with min ts', (done) => {
+            _testTsFormat('min-ts').
+                then(done).
+                catch(error => done.fail(error));
+        });
+
+        it('log get with delta ts', (done) => {
+            _testTsFormat('delta-ts').
+                then(done).
+                catch(error => done.fail(error));
+        });
+
+        it('log get with epoch ts', (done) => {
+            _testTsFormat('epoch-ts').
+                then(done).
+                catch(error => done.fail(error));
+        });
+
+        it('log get with no ts', (done) => {
+            _testTsFormat('no-ts').
                 then(done).
                 catch(error => done.fail(error));
         });

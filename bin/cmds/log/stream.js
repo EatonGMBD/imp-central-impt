@@ -56,6 +56,7 @@ exports.builder = function (yargs) {
                 ' a Project file in the current directory, all of the devices assigned to the Device Group referenced by the Project file are added.',
                 Options.DEVICE_IDENTIFIER, Options.DEVICE_GROUP_IDENTIFIER, Options.DEVICE_IDENTIFIER, Options.DEVICE_GROUP_IDENTIFIER)
         },
+        [Options.LOG] : false,
         [Options.OUTPUT] : false
     });
 
