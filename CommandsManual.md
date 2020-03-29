@@ -144,6 +144,20 @@ The `--output` option has the following `<mode>` values:
 | json | The same as `minimal`, but all information (except user interaction) is displayed in the JSON format |
 | debug | Debug information is added to the default output |
 
+### Timestamp Format In Logs ###
+
+In the commands which display device logs the `--log [<timestamp_format>]` option (alias: `-l`) can be used to adjust the format of timestamps in the logs. If the value of the option is not specified, the `full` format is assumed.
+
+The `--log` option has the following `<timestamp_format>` values:
+
+| Value | Description |
+| --- | --- |
+| full | (This is the default value.) Timestamps are displayed exactly as returned by the impCentral API |
+| min-ts | Timestamps are displayed without date. Time is converted to the timezone of the user |
+| epoch-ts | Timestamps are displayed as milliseconds since the epoch (Jan 1, 1970) |
+| delta-ts | Timestamps are displayed as a time relative to the first displayed timestamp |
+| no-ts | Timestamps are not displayed in the logs |
+
 ## Entity Identification ##
 
 *impt* obeys the following rules when searching for any of the impCentral API entities &mdash; Account, Product, Device Group, Device and Deployment &mdash; described in this section:
@@ -810,7 +824,7 @@ The returned list of the builds may be filtered. Filtering uses any combination 
 impt build run [--account <account_id] [--all] [--dg <DEVICE_GROUP_IDENTIFIER>] [--device-file <device_file>]
     [--agent-file <agent_file>] [--descr <build_description>]
     [--origin <origin>] [--tag <tag>] [--flagged [true|false]]
-    [--conditional] [--log] [--output <mode>] [--help]
+    [--conditional] [--log [<timestamp_format>]] [--output <mode>] [--help]
 ```
 
 Creates, deploys and runs a build (Deployment). Optionally, displays logs of the running build.
@@ -831,7 +845,7 @@ The command fails if one or both of the specified source files do not exist, or 
 | --tag | -t | No | Yes | A tag applied to this build (Deployment). This option may be repeated multiple times to apply multiple tags |
 | --flagged | -f | No | No | If `true` or no value is supplied, this build (Deployment) cannot be deleted without first setting this option back to `false`. If `false` or the option is not specified, the build can be deleted |
 | --conditional | -c | No | No | Trigger a conditional restart of the devices assigned to the specified Device Group instead of a normal restart (see the impCentral API specification) |
-| --log | -l | No | No | Starts displaying logs from the devices assigned to the specified Device Group (see the [`impt log stream`](#log-stream) description). To stop displaying the logs, press *Ctrl-C* |
+| --log | -l | No | No | Starts displaying logs from the devices assigned to the specified Device Group (see the [`impt log stream`](#log-stream) description). To stop displaying the logs, press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -950,7 +964,8 @@ It is not an atomic operation - it is possible for some of the specified devices
 #### Device Restart ####
 
 ```
-impt device restart [--account <account_id>] --device <DEVICE_IDENTIFIER> [--conditional] [--log] [--output <mode>] [--help]
+impt device restart [--account <account_id>] --device <DEVICE_IDENTIFIER> [--conditional] [--log [<timestamp_format>]]
+    [--output <mode>] [--help]
 ```
 
 Reboots the specified device and, optionally, starts displaying logs from it.
@@ -960,7 +975,7 @@ Reboots the specified device and, optionally, starts displaying logs from it.
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
 | --conditional | -c | No | No | Trigger a conditional restart (see the impCentral API specification) |
-| --log | -l | No | No | Start displaying logs from the specified device (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C* |
+| --log | -l | No | No | Start displaying logs from the specified device (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1134,7 +1149,8 @@ The operation may also fail for some combinations of Device Group [type](#device
 #### Device Group Restart ####
 
 ```
-impt dg restart [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--conditional] [--log] [--output <mode>] [--help]
+impt dg restart [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--conditional] [--log [<timestamp_format>]]
+    [--output <mode>] [--help]
 ```
 
 Reboots all of the devices assigned to the specified Device Group and, optionally, starts displaying logs from them. Does nothing if the Device Group has no devices assigned to it.
@@ -1144,7 +1160,7 @@ Reboots all of the devices assigned to the specified Device Group and, optionall
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --dg | -g | Yes/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). If not specified, the Device Group referenced by the [Project file](#project-files) in the current directory is used (if there is no Project file, the command fails) |
 | --conditional | -c | No | No | Trigger a conditional restart (see the impCentral API specification) |
-| --log | -l | No | No | Start displaying logs from the devices assigned to the specified Device Group (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C* |
+| --log | -l | No | No | Start displaying logs from the devices assigned to the specified Device Group (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1195,7 +1211,7 @@ Updates the specified Device Group. Fails if the specified Device Group does not
 
 ```
 impt log get [--account <account_id>] [--device <DEVICE_IDENTIFIER>] [--page-size <number_of_entries>]
-    [--page-number <page_number>] [--output <mode>] [--help]
+    [--page-number <page_number>] [--log [<timestamp_format>]] [--output <mode>] [--help]
 ```
 
 Displays historical logs for the specified device. The logs are displayed with the most recent entry first.
@@ -1213,13 +1229,15 @@ If the `--page-number` option is specified, the command displays the specified p
 | --device | -d | Yes/[Project](#project-files) | Yes | A [device identifier](#device-identifier). If not specified and there is only one device in the Device Group referenced by the [Project file](#project-files) in the current directory, then this device is used (if there is no Project file, or the Device Group has none or more than one device, the command fails) |
 | --page-size | -s | No | Yes | Number of log entries in one page. Default: 20 |
 | --page-number | -n | No | Yes | Ordinal page number with the log entries to display. Must have a positive value. Page 1 is a page with the most recent log entries. If not specified, the command displays all saved log entries |
+| --log | -l | No | No | [Format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
 #### Log Stream ####
 
 ```
-impt log stream [--account <account_id>] [--device <DEVICE_IDENTIFIER>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--output <mode>] [--help]
+impt log stream [--account <account_id>] [--device <DEVICE_IDENTIFIER>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--log [<timestamp_format>]]
+    [--output <mode>] [--help]
 ```
 
 Creates a log stream and displays logs from the specified devices in real-time. To stop displaying the logs press *Ctrl-C*.
@@ -1235,6 +1253,7 @@ The command allows you to add multiple devices to the newly created log stream. 
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --device | -d | No | Yes | The [device identifier](#device-identifier) of the device to be added to the log stream. This option may be repeated multiple times to specify multiple devices |
 | --dg | -g | No/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). This option may be included multiple times to specify multiple Device Groups. Logs from all of the devices assigned to the specified Device Groups will be added to the log stream. `--device` and `--dg` options are cumulative. If neither the `--device` nor the `--dg` options are specified but there is a [Project file](#project-files) in the current directory, all of the devices assigned to the Device Group referenced by the [Project file](#project-files) are added |
+| --log | -l | No | No | [Format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 

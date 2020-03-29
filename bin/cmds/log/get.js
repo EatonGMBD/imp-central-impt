@@ -54,6 +54,7 @@ exports.builder = function (yargs) {
             demandOption : false,
             positiveInteger : true
         },
+        [Options.LOG] : false,
         [Options.OUTPUT] : false
     });
     return yargs
