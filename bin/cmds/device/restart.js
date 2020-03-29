@@ -39,7 +39,11 @@ exports.describe = COMMAND_SHORT_DESCR;
 exports.builder = function (yargs) {
     const options = Options.getOptions({
         [Options.ACCOUNT] : false,
-        [Options.DEVICE_IDENTIFIER] : true,
+        [Options.DEVICE_IDENTIFIER] : {
+            demandOption : true,
+            type : 'array',
+            elemType : 'string'
+        },
         [Options.CONDITIONAL] : false,
         [Options.LOG] : {
             demandOption : false,
