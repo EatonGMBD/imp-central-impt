@@ -75,7 +75,7 @@ describe(`impt device restart test suite (output: ${outputMode ? outputMode : 'd
     function _checkSuccessRestartedDeviceMessage(commandOut, device) {
         ImptTestHelper.checkOutputMessage(`${outputMode}`, commandOut,
             Util.format(`${UserInterractor.MESSAGES.DEVICE_RESTARTED}`,
-                `${Identifier.ENTITY_TYPE.TYPE_DEVICE} "${device}"`)
+                `${Identifier.ENTITY_TYPE.TYPE_DEVICE}(s) "${device}"`)
         );
     }
 
@@ -83,7 +83,7 @@ describe(`impt device restart test suite (output: ${outputMode ? outputMode : 'd
     function _checkSuccessCondRestartedDeviceMessage(commandOut, device) {
         ImptTestHelper.checkOutputMessage(`${outputMode}`, commandOut,
             Util.format(`${UserInterractor.MESSAGES.DEVICE_COND_RESTARTED}`,
-                `${Identifier.ENTITY_TYPE.TYPE_DEVICE} "${device}"`)
+                `${Identifier.ENTITY_TYPE.TYPE_DEVICE}(s) "${device}"`)
         );
     }
 
@@ -118,6 +118,17 @@ describe(`impt device restart test suite (output: ${outputMode ? outputMode : 'd
         it('conditional restart device by agent id', (done) => {
             ImptTestHelper.runCommand(`impt device restart -c -d ${ImptTestHelper.deviceInfo.deviceAgentId} ${outputMode}`, (commandOut) => {
                 _checkSuccessCondRestartedDeviceMessage(commandOut, ImptTestHelper.deviceInfo.deviceAgentId);
+                ImptTestHelper.checkSuccessStatus(commandOut);
+            }).
+                then(done).
+                catch(error => done.fail(error));
+        });
+
+        it('restart multiple devices', (done) => {
+            const devices = Array(3).fill(config.devices[config.deviceidx]).
+                map((device) => `--device ${device}`).join(' ');
+            ImptTestHelper.runCommand(`impt device restart ${devices} ${outputMode}`, (commandOut) => {
+                _checkSuccessRestartedDeviceMessage(commandOut, config.devices[config.deviceidx]);
                 ImptTestHelper.checkSuccessStatus(commandOut);
             }).
                 then(done).

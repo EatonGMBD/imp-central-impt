@@ -968,14 +968,16 @@ impt device restart [--account <account_id>] --device <DEVICE_IDENTIFIER> [--con
     [--output <mode>] [--help]
 ```
 
-Reboots the specified device and, optionally, starts displaying logs from it.
+Reboots the specified devices and, optionally, starts displaying logs from them.
+
+It is not an atomic operation - it is possible for some of the specified devices to be restarted and other devices to fail to be restarted.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | A [device identifier](#device-identifier) of Device to be restarted. This option may be repeated multiple times to specify multiple Devices |
 | --conditional | -c | No | No | Trigger a conditional restart (see the impCentral API specification) |
-| --log | -l | No | No | Start displaying logs from the specified device (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
+| --log | -l | No | No | Start displaying logs from the specified devices (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
