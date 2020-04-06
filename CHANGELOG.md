@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+## [v2.5.0-etn] - 2020-04-06
+
 ### Added ###
 
 - Support for Bitbucket Server as a file source for Builder. Includes:
@@ -42,3 +44,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Many various issues to make all tests passed
 
 ## [Released] ##
+
+[v2.5.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v2.5.0-etn
