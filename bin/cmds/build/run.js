@@ -64,7 +64,12 @@ exports.builder = function (yargs) {
             demandOption : false,
             describe : 'Trigger a conditional restart of the devices assigned to the specified Device Group instead of a normal restart.'
         },
-        [Options.LOG] : false,
+        [Options.LOG] : {
+            demandOption : false,
+            describe : 'Starts displaying logs from the devices assigned to the specified Device Group (see the impt log stream command description).' +
+                ' To stop displaying the logs, press <Ctrl-C>. Optional value specifies the format of timestamps in the logs.' +
+                ' If the value is not specified, the full format is assumed.'
+        },
         [Options.ALL] : {
             demandOption : false,
             describe : 'Run build for all device groups in project file.'

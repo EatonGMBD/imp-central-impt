@@ -190,8 +190,7 @@ describe(`impt build list test suite (output: ${outputMode ? outputMode : 'defau
         it('build list by owner id and product id', (done) => {
             ImptTestHelper.runCommand(`impt build list --owner ${userid} --product ${product_id} -z json`, (commandOut) => {
                 expect(commandOut).toContainBuild({ id: build2_id });
-                expect(commandOut).toContainBuild({ id: build3_id });
-                expect(commandOut).toHaveBuildCountEqual(2);
+                expect(commandOut).toHaveBuildCountEqual(1);
                 ImptTestHelper.checkSuccessStatus(commandOut);
             }).
                 then(done).
@@ -201,8 +200,7 @@ describe(`impt build list test suite (output: ${outputMode ? outputMode : 'defau
         it('build list by owner name and product name', (done) => {
             ImptTestHelper.runCommand(`impt build list --owner ${config.username} --product ${PRODUCT2_NAME} -z json`, (commandOut) => {
                 expect(commandOut).toContainBuild({ id: build2_id });
-                expect(commandOut).toContainBuild({ id: build3_id });
-                expect(commandOut).toHaveBuildCountEqual(2);
+                expect(commandOut).toHaveBuildCountEqual(1);
                 ImptTestHelper.checkSuccessStatus(commandOut);
             }).
                 then(done).
@@ -262,8 +260,7 @@ describe(`impt build list test suite (output: ${outputMode ? outputMode : 'defau
 
         it('build list by product id and unflagged', (done) => {
             ImptTestHelper.runCommand(`impt build list -p ${product_id} --unflagged -z json`, (commandOut) => {
-                expect(commandOut).toContainBuild({ id: build3_id });
-                expect(commandOut).toHaveBuildCountEqual(1);
+                expect(commandOut).toHaveBuildCountEqual(0);
                 ImptTestHelper.checkSuccessStatus(commandOut);
             }).
                 then(done).
@@ -272,8 +269,7 @@ describe(`impt build list test suite (output: ${outputMode ? outputMode : 'defau
 
         it('build list by product id  and zombie', (done) => {
             ImptTestHelper.runCommand(`impt build list -p ${product_id} --zombie -z json`, (commandOut) => {
-                expect(commandOut).toContainBuild({ id: build3_id });
-                expect(commandOut).toHaveBuildCountEqual(1);
+                expect(commandOut).toHaveBuildCountEqual(0);
                 ImptTestHelper.checkSuccessStatus(commandOut);
             }).
                 then(done).

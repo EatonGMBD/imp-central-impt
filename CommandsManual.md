@@ -1,5 +1,7 @@
 # impt Commands Manual #
 
+**Note** Some of the commands in this file have been changed to support multiple accounts in the [Auth file](#auth-files) and multiple device groups and in the [Project File](#project-files). While we added some untested new features, other old features have not been re-tested.
+
 ## List Of Commands ##
 
 **[impt account info](#account-info)**<br />
@@ -10,6 +12,8 @@
 **[impt auth login](#auth-login)**<br />
 **[impt auth logout](#auth-logout)**<br />
 **[impt auth select](#auth-select)**<br />
+**[impt auth github](#auth-github)**<br />
+**[impt auth bitbucket-server](#auth-bitbucket-server)**<br />
 
 **[impt build cleanup](#build-cleanup)**<br />
 **[impt build copy](#build-copy)**<br />
@@ -63,6 +67,7 @@
 **[impt test create](#test-create)**<br />
 **[impt test delete](#test-delete)**<br />
 **[impt test github](#test-github)**<br />
+**[impt test bitbucket-server](#test-bitbucket-server)**<br />
 **[impt test info](#test-info)**<br />
 **[impt test run](#test-run)**<br />
 **[impt test update](#test-update)**<br />
@@ -85,6 +90,7 @@
 - [Auth Environment Variables](#auth-environment-variables)
 - [Command Execution Context](#command-execution-context)
 - [Project Files](#project-files)
+- [Secrets Files](#secrets-files)
 - [Test Configuration Files](#test-configuration-files)
 - [Command Description](#command-description)
 - [List of Aliases](#list-of-aliases)
@@ -137,6 +143,20 @@ The `--output` option has the following `<mode>` values:
 | minimal | Only minimal output, mandated by the command, is generated; no additional colors are used in the output |
 | json | The same as `minimal`, but all information (except user interaction) is displayed in the JSON format |
 | debug | Debug information is added to the default output |
+
+### Timestamp Format In Logs ###
+
+In the commands which display device logs the `--log [<timestamp_format>]` option (alias: `-l`) can be used to adjust the format of timestamps in the logs. If the value of the option is not specified, the `full` format is assumed.
+
+The `--log` option has the following `<timestamp_format>` values:
+
+| Value | Description |
+| --- | --- |
+| full | (This is the default value.) Timestamps are displayed exactly as returned by the impCentral API |
+| min-ts | Timestamps are displayed without date. Time is converted to the timezone of the user |
+| epoch-ts | Timestamps are displayed as milliseconds since the epoch (Jan 1, 1970) |
+| delta-ts | Timestamps are displayed as a time relative to the first displayed timestamp |
+| no-ts | Timestamps are not displayed in the logs |
 
 ## Entity Identification ##
 
@@ -217,6 +237,74 @@ Attributes accepted as `<BUILD_IDENTIFIER>` (in order of search):
 
 An auth file is a `.impt.auth` file. It stores authentication and other information necessary to execute *impt* commands.
 
+**Note** An Auth file may contain more than one account's auth information, and can contain github info added using [impt auth github](#auth-github).
+
+Each account's auth information contents are dependent on the `profileType`, which is one of the keys of the auth payload. Currently, the supported types are "impCentral" or "github".
+
+If the `profileType` is "impCentral", the following contents are included:
+- `endpoint`: an impCentral API endpoint (the API base URL).
+- `profileType`: "impCentral"
+- `accessToken`: Account's access token.
+- `expiresAt`: Expiration time of the access token.
+- `loginKey`: login key for the account.
+- `userName`
+- `accounts`: an array of all accounts that can be accessed by this account.
+- `isDefault`: Boolean flag to indicate whether this is the default account to be used with *impt* commands. It is only included in one account and can be changed using [impt auth select](#auth-select).
+
+If the `profileType` is "github", the following contents are included:
+- `githubUser`: GitHub username
+- `githubToken`: GitHub password
+- `profileType`: "github"
+
+If the `profileType` is "bitbucketSrv", the following contents are included:
+- `bitbucketSrvAddr`: Bitbucket Server address
+- `bitbucketSrvUser`: Bitbucket Server username
+- `bitbucketSrvToken`: Bitbucket Server password
+- `profileType`: "bitbucketSrv"
+
+The Auth file is of the form:
+
+```JSON
+{
+    "USER_ACCOUNT_ID1": {
+        "endpoint": "https://api.electricimp.com/v5",
+        "profileType": "impCentral",
+        "accessToken": "ACCESS_TOKEN",
+        "expiresAt": "2019-08-08T15:26:25.510Z",
+        "loginKey": "LOGIN_KEY",
+        "userName": "USERNAME",
+        "accounts": [
+            "USER_ACCOUNT_ID1",
+            "SHARED_ACCOUNT_ID1"
+        ],
+        "isDefault": true
+    },
+    "USER_ACCOUNT_ID2": {
+        "endpoint": "https://api.electricimp.com/v5",
+        "profileType": "impCentral",
+        "accessToken": "ACCESS_TOKEN",
+        "expiresAt": "2019-08-08T15:26:11.370Z",
+        "loginKey": "LOGIN_KEY",
+        "userName": "USERNAME",
+        "accounts": [
+            "USER_ACCOUNT_ID1",
+            "SHARED_ACCOUNT_ID1"
+        ]
+    },
+    "GITHUB_USERNAME": {
+        "githubUser": "GITHUB_USERNAME",
+        "githubToken": "GITHUB_PASSWORD",
+        "profileType": "github"
+    },
+    "BITBUCKET_SERVER_ADDRESS": {
+        "bitbucketSrvAddr": "BITBUCKET_SERVER_ADDRESS",
+        "bitbucketSrvUser": "BITBUCKET_SERVER_USER",
+        "bitbucketSrvToken": "BITBUCKET_SERVER_TOKEN",
+        "profileType": "bitbucketSrv"
+    }
+}
+```
+
 ### Local Auth File ###
 
 A local auth file is an auth file located in the directory from where an *impt* command is called. Different directories may contain different local auth files. One directory can contain only one local auth file. One auth file may contain multiple accounts.
@@ -274,36 +362,117 @@ Each Project file contains settings for a Project, an *impt* entity which links 
 
 A Project file may affect commands called from the directory where the file is located. Product, Device Group, Devices, Deployment, and source code files referenced by Project file may be assumed by a command when they are not specified explicitly.
 
+**Note** Currently, Builder information in the project file must be created manually.
+
+Each project file contains the following:
+
+- Global Builder section: includes:
+    - `variables` which are used by all device groups.
+    - `libs` which are `.js` files that contain some functions used by builder variables.
+    - `preBuild` and `postBuild` which are commands or `.js` files that are executed before and after building the code.
+- Device Groups: Each device group is a key-value pair where the key is the device group ID and the value is an object containing the following information:
+    - `endpoint`: an impCentral API endpoint (the API base URL).
+    - `accountID`: the account ID that the device group belongs to.
+    - `deviceFile`:The device source code file name
+    - `agentFile`: The agent source code file name
+    - Local Builder section: Same as the Global Builder section but are specific to a device group.
+        - Local Builder section also includes additional property `machine` which includes:
+            - `excludeList`: a path to the file that lists resources which should not be cached. See [Caching Remote includes](https://github.com/electricimp/Builder#caching-remote-includes)
+    - `isDefault`: Boolean flag to indicate whether this is the default device group to be used. It must be included in one (and only one) of the device group entries.
+
+The project file is of the form:
+
+```JSON
+{
+  "builder": {
+    "variables": {
+      "GLOBAL_VARIABLE_1": "someGlobalVar1",
+      "GLOBAL_VARIABLE_2": "someGlobalVar2"
+    },
+    "libs": [
+        "jslib.js",
+        "jslib2.js"
+    ]
+  },
+  "deviceGroups": {
+    "device_group_id_1": {
+      "endpoint": "https://api.electricimp.com/v5",
+      "accountID": "USER_ACCOUNT_ID",
+      "deviceFile": "device.nut",
+      "agentFile": "agent.nut",
+      "builder": {
+        "variables": {
+            "VARIABLE_1": "someVar1",
+            "VARIABLE_2": "someVar2"
+        },
+        "machine": {
+          "excludeList": "exclude-list.builder"
+        },
+        "preBuild": [
+            "node prebuild1.js",
+            "echo 'prebuild2'"
+        ],
+        "postBuild": [
+            "echo 'postbuild1'",
+            "echo 'postbuild2'"
+        ]
+      },
+      "isDefault": true
+    },
+    "device_group_id_2": {
+      "endpoint": "https://api.electricimp.com/v5",
+      "accountID": "USER_ACCOUNT_ID",
+      "deviceFile": "device.nut",
+      "agentFile": "agent.nut",
+      "builder": {
+        "variables": {
+            "VARIABLE_1": "someVar1",
+            "VARIABLE_2": "someVar2"
+        },
+        "preBuild": [
+            "node prebuild1.js",
+            "echo 'prebuild2'"
+        ],
+        "postBuild": [
+            "echo 'postbuild1'",
+            "echo 'postbuild2'"
+        ]
+      }
+    }
+  }
+}
+```
+
 ## Secrets Files ##
 
 A Secrets file is a `.impt.project.secrets` file located in a given directory. Different directories may contain different Secrets files. A directory can contain only one Secrets file.
 
-Each Secrets file contains builder variables for information that shouldn't be tracked in GitHub. A Secrets file may contain a global builder variables object and specific builder variables associated with the device groups.
+Each Secrets file contains builder variables for information that shouldn't be tracked in git. A Secrets file may contain a global builder variables object and specific builder variables associated with the device groups.
 
-**Note** Currently, the Secrets file must be cretaed manually and is of the form: 
+**Note** Currently, the Secrets file must be created manually and is of the form:
 
-```
+```JSON
 {
   "builder": {
     "variables": {
-      "global_secret_key_1": "secretglobalkeyval1",
-      "global_secret_key_2": "secretglobalkeyval2"
+      "global_secret_key_1": "secretGlobalVar1",
+      "global_secret_key_2": "secretGlobalVar2"
     }
   },
   "deviceGroups": {
     "device_group_id_1": {
       "builder": {
         "variables": {
-          "secret_key_1": "secretkeyval1",
-          "secret_key_2": "secretkeyval2"
+          "secret_key_1": "secretVar1",
+          "secret_key_2": "secretVar2"
         }
       }
     },
     "device_group_id_2": {
       "builder": {
         "variables": {
-          "secret_key_1": "secretkeyval1",
-          "secret_key_2": "secretkeyval2"
+          "secret_key_1": "secretVar1",
+          "secret_key_2": "secretVar2"
         }
       }
     }
@@ -444,6 +613,40 @@ Changes default auth account.
 | --- | --- | --- | --- | --- |
 | --local | -l | No | No | If specified, creates or replaces a [local auth file](#local-auth-file) in the current directory. If not specified, creates or replaces the [global auth file](#global-auth-file) |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
+| --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
+| --help | -h | No | No | Displays a description of the command. Ignores any other options |
+
+#### Auth Github ####
+
+```
+impt auth github [--local] [--user <github_username>] [--pwd <github_password>] [--output <mode>] [--help]
+```
+
+Changes default auth account.
+
+| Option | Alias | Mandatory? | Value Required? | Description |
+| --- | --- | --- | --- | --- |
+| --local | -l | No | No | If specified, creates or replaces a [local auth file](#local-auth-file) in the current directory. If not specified, creates or replaces the [global auth file](#global-auth-file) |
+| --user | -u | No | Yes | a GitHub account username |
+| --pwd | -w | No | Yes | a GitHub account password or personal access token |
+| --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
+| --help | -h | No | No | Displays a description of the command. Ignores any other options |
+
+#### Auth Bitbucket Server ####
+
+```
+impt auth bitbucket-server [--local] [--bitbucket-srv-addr <bitbucket_server_address>] [--user <bitbucket_server_username>]
+    [--pwd <bitbucket_server_password>] [--output <mode>] [--help]
+```
+
+Adds Bitbucket Server address and credentials to the auth file.
+
+| Option | Alias | Mandatory? | Value Required? | Description |
+| --- | --- | --- | --- | --- |
+| --local | -l | No | No | If specified, creates or replaces a [local auth file](#local-auth-file) in the current directory. If not specified, creates or replaces the [global auth file](#global-auth-file) |
+| --bitbucket-srv-addr | -a | No | Yes | a Bitbucket Server address. E.g., "https://bitbucket-srv.itd.example.com" |
+| --user | -u | No | Yes | a Bitbucket Server account username |
+| --pwd | -w | No | Yes | a Bitbucket Server account password or personal access token |
 | --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -621,7 +824,7 @@ The returned list of the builds may be filtered. Filtering uses any combination 
 impt build run [--account <account_id] [--all] [--dg <DEVICE_GROUP_IDENTIFIER>] [--device-file <device_file>]
     [--agent-file <agent_file>] [--descr <build_description>]
     [--origin <origin>] [--tag <tag>] [--flagged [true|false]]
-    [--conditional] [--log] [--output <mode>] [--help]
+    [--conditional] [--log [<timestamp_format>]] [--output <mode>] [--help]
 ```
 
 Creates, deploys and runs a build (Deployment). Optionally, displays logs of the running build.
@@ -642,7 +845,7 @@ The command fails if one or both of the specified source files do not exist, or 
 | --tag | -t | No | Yes | A tag applied to this build (Deployment). This option may be repeated multiple times to apply multiple tags |
 | --flagged | -f | No | No | If `true` or no value is supplied, this build (Deployment) cannot be deleted without first setting this option back to `false`. If `false` or the option is not specified, the build can be deleted |
 | --conditional | -c | No | No | Trigger a conditional restart of the devices assigned to the specified Device Group instead of a normal restart (see the impCentral API specification) |
-| --log | -l | No | No | Starts displaying logs from the devices assigned to the specified Device Group (see the [`impt log stream`](#log-stream) description). To stop displaying the logs, press *Ctrl-C* |
+| --log | -l | No | No | Starts displaying logs from the devices assigned to the specified Device Group (see the [`impt log stream`](#log-stream) description). To stop displaying the logs, press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -676,16 +879,16 @@ impt device assign [--account <account_id>] --device <DEVICE_IDENTIFIER> [--dg <
     [--confirmed] [--output <mode>] [--help]
 ```
 
-Assigns the specified device to the specified Device Group. Fails if the specified Device Group does not exist.
+Assigns the specified devices to the specified Device Group. Fails if the specified Device Group does not exist.
 
-The user is asked to confirm the operation if the specified Device is already assigned to another Device Group. If the operation is confirmed (manually or automatically with the `--confirmed` option), the device is reassigned to the new Device Group.
+The user is asked to confirm the operation if a specified device is already assigned to another Device Group. If the operation is confirmed (manually or automatically with the `--confirmed` option), the device is reassigned to the new Device Group.
 
-The operation may fail for some combinations of Device Group [types](#device-group-type), for some kinds of device, or operations such as reassigning across Products.
+The operation may fail for some combinations of Device Group [types](#device-group-type), for some kinds of device, or operations such as reassigning across Products. It is not an atomic operation - it is possible for some of the specified devices to be assigned and other devices to fail to be assigned.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | The [device identifier](#device-identifier) of Device to be assigned. This option may be repeated multiple times to specify multiple Devices |
 | --dg | -g | Yes/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). If not specified, the Device Group referenced by the [Project Files](#project-files) in the current directory is used (if there is no Project file, the command fails) |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -741,16 +944,18 @@ The returned list of the devices may be filtered. Filtering uses any combination
 impt device remove [--account <account_id>] --device <DEVICE_IDENTIFIER> [--force] [--confirmed] [--output <mode>] [--help]
 ```
 
-Removes the specified Device from the current account.
+Removes the specified Devices from the current account.
 
-The command fails if the device is assigned to a Device Group and the `--force` option is not specified. Use either `--force` or [`impt device unassign`](#device-unassign) to unassign the device before removal.
+The command fails if a device is assigned to a Device Group and the `--force` option is not specified. Use either `--force` or [`impt device unassign`](#device-unassign) to unassign devices before removal.
 
 The user is asked to confirm the operation, unless confirmed automatically with the `--confirmed` option.
+
+It is not an atomic operation - it is possible for some of the specified devices to be removed and other devices to fail to be removed.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | A [device identifier](#device-identifier) of Device to be removed. This option may be repeated multiple times to specify multiple Devices |
 | --force | -f | No | No | If the device is assigned to a Device Group, unassign it first |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -759,17 +964,20 @@ The user is asked to confirm the operation, unless confirmed automatically with 
 #### Device Restart ####
 
 ```
-impt device restart [--account <account_id>] --device <DEVICE_IDENTIFIER> [--conditional] [--log] [--output <mode>] [--help]
+impt device restart [--account <account_id>] --device <DEVICE_IDENTIFIER> [--conditional] [--log [<timestamp_format>]]
+    [--output <mode>] [--help]
 ```
 
-Reboots the specified device and, optionally, starts displaying logs from it.
+Reboots the specified devices and, optionally, starts displaying logs from them.
+
+It is not an atomic operation - it is possible for some of the specified devices to be restarted and other devices to fail to be restarted.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | A [device identifier](#device-identifier) of Device to be restarted. This option may be repeated multiple times to specify multiple Devices |
 | --conditional | -c | No | No | Trigger a conditional restart (see the impCentral API specification) |
-| --log | -l | No | No | Start displaying logs from the specified device (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C* |
+| --log | -l | No | No | Start displaying logs from the specified devices (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -779,12 +987,14 @@ Reboots the specified device and, optionally, starts displaying logs from it.
 impt device unassign [--account <account_id>] --device <DEVICE_IDENTIFIER> [--unbond <unbond_key>] [--output <mode>] [--help]
 ```
 
-Unassigns the specified device. Does nothing if the device already unassigned.
+Unassigns the specified devices. Does nothing if a device is already unassigned.
+
+It is not an atomic operation — it is possible for some of the specified devices to be unassigned and other devices to fail to be unassigned.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --device | -d | Yes | Yes | A [device identifier](#device-identifier) |
+| --device | -d | Yes | Yes | The [device identifier](#device-identifier) of Device to be unassigned. This option may be repeated multiple times to specify multiple Devices |
 | --unbond | -u | No | Yes | An unbond key is required to unassign the specified device from a Device Group of the *production* [type](#device-group-type) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
@@ -941,7 +1151,8 @@ The operation may also fail for some combinations of Device Group [type](#device
 #### Device Group Restart ####
 
 ```
-impt dg restart [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--conditional] [--log] [--output <mode>] [--help]
+impt dg restart [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--conditional] [--log [<timestamp_format>]]
+    [--output <mode>] [--help]
 ```
 
 Reboots all of the devices assigned to the specified Device Group and, optionally, starts displaying logs from them. Does nothing if the Device Group has no devices assigned to it.
@@ -951,7 +1162,7 @@ Reboots all of the devices assigned to the specified Device Group and, optionall
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --dg | -g | Yes/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). If not specified, the Device Group referenced by the [Project file](#project-files) in the current directory is used (if there is no Project file, the command fails) |
 | --conditional | -c | No | No | Trigger a conditional restart (see the impCentral API specification) |
-| --log | -l | No | No | Start displaying logs from the devices assigned to the specified Device Group (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C* |
+| --log | -l | No | No | Start displaying logs from the devices assigned to the specified Device Group (see [`impt log stream`](#log-stream)). To stop displaying the logs press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1002,7 +1213,7 @@ Updates the specified Device Group. Fails if the specified Device Group does not
 
 ```
 impt log get [--account <account_id>] [--device <DEVICE_IDENTIFIER>] [--page-size <number_of_entries>]
-    [--page-number <page_number>] [--output <mode>] [--help]
+    [--page-number <page_number>] [--log [<timestamp_format>]] [--output <mode>] [--help]
 ```
 
 Displays historical logs for the specified device. The logs are displayed with the most recent entry first.
@@ -1020,13 +1231,15 @@ If the `--page-number` option is specified, the command displays the specified p
 | --device | -d | Yes/[Project](#project-files) | Yes | A [device identifier](#device-identifier). If not specified and there is only one device in the Device Group referenced by the [Project file](#project-files) in the current directory, then this device is used (if there is no Project file, or the Device Group has none or more than one device, the command fails) |
 | --page-size | -s | No | Yes | Number of log entries in one page. Default: 20 |
 | --page-number | -n | No | Yes | Ordinal page number with the log entries to display. Must have a positive value. Page 1 is a page with the most recent log entries. If not specified, the command displays all saved log entries |
+| --log | -l | No | No | [Format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
 #### Log Stream ####
 
 ```
-impt log stream [--account <account_id>] [--device <DEVICE_IDENTIFIER>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--output <mode>] [--help]
+impt log stream [--account <account_id>] [--device <DEVICE_IDENTIFIER>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--log [<timestamp_format>]]
+    [--output <mode>] [--help]
 ```
 
 Creates a log stream and displays logs from the specified devices in real-time. To stop displaying the logs press *Ctrl-C*.
@@ -1042,6 +1255,7 @@ The command allows you to add multiple devices to the newly created log stream. 
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --device | -d | No | Yes | The [device identifier](#device-identifier) of the device to be added to the log stream. This option may be repeated multiple times to specify multiple devices |
 | --dg | -g | No/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). This option may be included multiple times to specify multiple Device Groups. Logs from all of the devices assigned to the specified Device Groups will be added to the log stream. `--device` and `--dg` options are cumulative. If neither the `--device` nor the `--dg` options are specified but there is a [Project file](#project-files) in the current directory, all of the devices assigned to the Device Group referenced by the [Project file](#project-files) are added |
+| --log | -l | No | No | [Format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1389,7 +1603,8 @@ impt test create [--account <account_id>] --dg <DEVICE_GROUP_IDENTIFIER> [--devi
     [--agent-file <agent_file>] [--timeout <timeout>] [--stop-on-fail [true|false]]
     [--allow-disconnect [true|false]] [--builder-cache [true|false]]
     [--test-file <test_file_name_pattern>] [--github-config <github_credentials_file_name>]
-    [--builder-config <builder_file_name>] [--confirmed] [--output <mode>] [--help]
+    [--bitbucket-srv-config <bitbucket_server_credentials_file_name>] [--builder-config <builder_file_name>]
+    [--confirmed] [--output <mode>] [--help]
 ```
 
 Creates a [test configuration file](#test-configuration-files) in the current directory.
@@ -1410,6 +1625,7 @@ At the end of the command execution, information about the test configuration is
 | --builder-cache | -e | No | No | If `true` or no value, cache external libraries in the local `.builder-cache` directory. If `false`, do not cache external libraries. If the local `.builder-cache` directory exists, it is cleaned. Default: `false` |
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. Default: `"*.test.nut"` `"tests/**/*.test.nut"` |
 | --github-config | -i | No | Yes | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist |
+| --bitbucket-srv-config | -b | No | Yes | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist |
 | --builder-config | -j | No | Yes | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -1418,8 +1634,8 @@ At the end of the command execution, information about the test configuration is
 #### Test Delete ####
 
 ```
-impt test delete [--account <account_id>] [--github-config] [--builder-config] [--entities] [--all] [--confirmed]
-    [--output <mode>] [--help]
+impt test delete [--account <account_id>] [--github-config] [--bitbucket-srv-config] [--builder-config]
+    [--entities] [--all] [--confirmed] [--output <mode>] [--help]
 ```
 
 Deletes the [test configuration file](#test-configuration-files) in the current directory. Does nothing if there is no [test configuration file](#test-configuration-files) in the current directory.
@@ -1430,6 +1646,7 @@ The following entities are deleted (if the exist):
 - A *Builder* cache (`.builder-cache` directory) in the current directory.
 - Debug information (`.build` directory) in the current directory.
 - If the `--github-config` option is specified, the GitHub credentials file referenced by the test configuration file.
+- If the `--bitbucket-srv-config` option is specified, the Bitbucket Server credentials file referenced by the test configuration file.
 - If the `--builder-config` option is specified, the file with *Builder* variables referenced by the test configuration file.
 - If the `--entities` option is specified:
     - The Device Group referenced by the test configuration file. All Devices are unassigned from that Device Group.
@@ -1442,6 +1659,7 @@ The user is asked to confirm the operation unless confirmed automatically with t
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --github-config | -i | No | No | Also deletes the GitHub credentials file referenced by [test configuration file](#test-configuration-files) |
+| --bitbucket-srv-config | -b | No | No | Also deletes the Bitbucket Server credentials file referenced by [test configuration file](#test-configuration-files) |
 | --builder-config | -j | No | No | Also deletes the file with *Builder* variables referenced by [test configuration file](#test-configuration-files) |
 | --entities | -e | No | No | Also deletes the impCentral API entities (Device Group, Product, Deployments) referenced by [test configuration file](#test-configuration-files). See above. |
 | --all | -a | No | No | Includes `--github-config`, `--builder-config` and `--entities` options |
@@ -1470,6 +1688,35 @@ If the `--user` option is not specified, the user is asked to input the GitHub c
 | --github-config | -i | Yes | Yes | A path to the GitHub credentials file. A relative or absolute path can be used |
 | --user | -u | No | Yes | A GitHub account username |
 | --pwd | -w | No | Yes | A GitHub account password or personal access token. If specified, the `--user` option must also be specified |
+| --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
+| --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
+| --help | -h | No | No | Displays a description of the command. Ignores any other options |
+
+#### Test Bitbucket Server ####
+
+```
+impt test bitbucket-server [--account <account_id>] --bitbucket-srv-config <bitbucket_server_credentials_file_name>
+    [--bitbucket-srv-addr <bitbucket_server_address>] [--user <bitbucket_server_username> [--pwd <bitbucket_server_password>]]
+    [--confirmed] [--output <mode>] [--help]
+```
+
+Creates or updates a Bitbucket Server credentials file.
+
+**Note** This command does **not** write the created or updated Bitbucket Server credentials file to any [test configuration file](#test-configuration-files). Use [`impt test create`](#test-create) or [`impt test update`](#test-update) to apply the Bitbucket Server credentials to tests.
+
+The user is asked to confirm the operation if the specified Bitbucket Server credentials file already exists, unless confirmed automatically with the `--confirmed` option. If confirmed, the existing Bitbucket Server credentials file is overwritten.
+
+If the `--bitbucket-srv-addr` option is not specified, the user is asked to input the Bitbucket Server credentials.
+
+If the `--user` option is not specified, the user is asked to input the Bitbucket Server credentials. If the `--user` option is specified but the `--pwd` option is not, the user is asked to input the Bitbucket Server account password or personal access token.
+
+| Option | Alias | Mandatory? | Value Required? | Description |
+| --- | --- | --- | --- | --- |
+| --account | -ac | No | Yes | The authenticated account identifier: an account ID |
+| --bitbucket-srv-config | -b | Yes | Yes | A path to the Bitbucket Server credentials file. A relative or absolute path can be used |
+| --bitbucket-srv-addr | -a | No | Yes | A Bitbucket Server address. E.g., "https://bitbucket-srv.itd.example.com" |
+| --user | -u | No | Yes | A Bitbucket Server account username |
+| --pwd | -w | No | Yes | A Bitbucket Server account password or personal access token. If specified, the `--user` option must also be specified |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
@@ -1511,6 +1758,7 @@ impt test update [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--de
     [--agent-file [<agent_file>]] [--timeout <timeout>] [--stop-on-fail [true|false]]
     [--allow-disconnect [true|false]] [--builder-cache [true|false]]
     [--test-file <test_file_name_pattern>] [--github-config [<github_credentials_file_name>]]
+    [--bitbucket-srv-config [<bitbucket_server_credentials_file_name>]]
     [--builder-config [<builder_file_name>]] [--output <mode>] [--help]
 ```
 
@@ -1530,6 +1778,7 @@ At the end of the command execution, information about the test configuration is
 | --builder-cache | -e | No | No | If `true` or no value, cache external libraries in the local `.builder-cache` directory. If `false`, do not cache external libraries; in this case, if the local `.builder-cache` directory exists, it is cleaned |
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. The specified values fully replace the existed setting |
 | --github-config | -i | No | No | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a GitHub credentials file from the test configuration |
+| --bitbucket-srv-config | -b | No | No | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a Bitbucket Server credentials file from the test configuration |
 | --builder-config | -j | No | No | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a file with *Builder* variables from the test configuration |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
@@ -1637,9 +1886,9 @@ Updates the specified webhook with a new target URL and/or MIME content-type. Fa
 
 | Command<br />Option<br />Alias | Command Option<br />Full Name(s) |
 | --- | --- |
-| -a | --all, --assigned, --allow-disconnect |
+| -a | --all, --assigned, --allow-disconnect, --bitbucket-srv-addr |
 | -ac | --account |
-| -b | --build, --builds |
+| -b | --build, --builds, --bitbucket-srv-config |
 | -c | --create-product, --conditional |
 | -d | --device |
 | -e | --endpoint, --entities, --event, --builder-cache, --clear-cache |

@@ -162,8 +162,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                         ImptTestHelper.checkSuccessStatus(commandOut);
                     }).
                         then(() => ImptTestHelper.runCommand(`impt build info -b ${build_id} ${outputMode}`, (commandOut) => {
-                            ImptTestHelper.checkAttribute(commandOut, 'flagged', 'false');
-                            ImptTestHelper.checkSuccessStatus(commandOut);
+                            ImptTestHelper.checkFailStatus(commandOut);
                         })).
                         then(() => ImptDgTestHelper.checkDeviceGroupNotExist(DEVICE_GROUP_NAME)).
                         then(done).
@@ -173,8 +172,6 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                 it('delete device group with builds', (done) => {
                     ImptTestHelper.runCommand(`impt dg delete --dg ${DEVICE_GROUP_NAME} -f --builds -q ${outputMode}`, (commandOut) => {
                         _checkSuccessDeleteDeviceGroupMessage(commandOut, DEVICE_GROUP_NAME);
-                        _checkSuccessUpdateDeploymentMessage(commandOut, build_id);
-                        _checkSuccessDeleteDeploymentMessage(commandOut, build_id);
                         ImptTestHelper.checkSuccessStatus(commandOut);
                     }).
                         then(() => ImptTestHelper.runCommand(`impt build info -b ${build_id} ${outputMode}`, (commandOut) => {

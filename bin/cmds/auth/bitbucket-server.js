@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright 2018 Electric Imp
+// Copyright 2020 Electric Imp
 //
 // SPDX-License-Identifier: MIT
 //
@@ -24,13 +24,15 @@
 
 'use strict';
 
-const Device = require('../../../lib/Device');
+const Auth = require('../../../lib/Auth');
 const Options = require('../../../lib/util/Options');
+const Errors = require('../../../lib/util/Errors');
+const UserInteractor = require('../../../lib/util/UserInteractor');
 
-const COMMAND = 'unassign';
-const COMMAND_SECTION = 'device';
-const COMMAND_SHORT_DESCR = 'Unassigns the specified device.';
-const COMMAND_DESCRIPTION = 'Unassigns the specified device. Does nothing if the device already unassigned.'
+const COMMAND = 'bitbucket-server';
+const COMMAND_SECTION = 'auth';
+const COMMAND_SHORT_DESCR = 'Adds Bitbucket Server address and credentials to auth file.';
+const COMMAND_DESCRIPTION = COMMAND_SHORT_DESCR;
 
 exports.command = COMMAND;
 
@@ -38,19 +40,32 @@ exports.describe = COMMAND_SHORT_DESCR;
 
 exports.builder = function (yargs) {
     const options = Options.getOptions({
-        [Options.ACCOUNT] : false,
-        [Options.DEVICE_IDENTIFIER] : {
-            demandOption : true,
-            type : 'array',
-            elemType : 'string'
+        [Options.LOCAL] : false,
+        [Options.BITBUCKET_SERVER_ADDRESS] : {
+            demandOption : false,
+            describe : 'A Bitbucket Server address. E.g., "https://bitbucket-srv.itd.example.com"',
+            _usage: '<bitbucket_server_address>'
         },
-        [Options.UNBOND] : false,
+        [Options.USER] : {
+            demandOption : false,
+            describe : 'A Bitbucket Server account username.',
+            _usage: '<bitbucket_server_username>'
+        },
+        [Options.PASSWORD] : {
+            demandOption : false,
+            describe : 'A Bitbucket Server account password or personal access token.',
+            _usage: '<bitbucket_server_password>'
+        },
         [Options.OUTPUT] : false
     });
     return yargs
         .usage(Options.getUsage(COMMAND_SECTION, COMMAND, COMMAND_DESCRIPTION, Options.getCommandOptions(options)))
         .options(options)
         .check(function (argv) {
+            const opts = new Options(argv);
+            if (opts.user === undefined && opts.password) {
+                return new Errors.CommandSyntaxError(UserInteractor.ERRORS.CMD_COOPERATIVE_OPTIONS, Options.PASSWORD, Options.USER);
+            }
             return Options.checkOptions(argv, options);
         })
         .strict();
@@ -58,5 +73,5 @@ exports.builder = function (yargs) {
 
 exports.handler = function (argv) {
     const options = new Options(argv);
-    new Device(options).unassign(options);
+    new Auth(options).bitbucketSrv(options);
 };

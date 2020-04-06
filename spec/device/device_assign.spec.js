@@ -90,7 +90,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
         function _checkAlreadyAssignedDeviceMessage(commandOut, device, dg) {
             ImptTestHelper.checkOutputMessage(`${outputMode}`, commandOut,
                 Util.format(`${UserInterractor.MESSAGES.DEVICE_ALREADY_ASSIGNED_TO_DG}`,
-                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE} "${device}"`,
+                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE}(s) "${device}"`,
                     `${Identifier.ENTITY_TYPE.TYPE_DEVICE_GROUP} "${dg}"`)
             );
         }
@@ -99,7 +99,7 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
         function _checkSuccessAssignedDeviceMessage(commandOut, device, dg) {
             ImptTestHelper.checkOutputMessage(`${outputMode}`, commandOut,
                 Util.format(`${UserInterractor.MESSAGES.DEVICE_ASSIGNED_TO_DG}`,
-                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE} "${device}"`,
+                    `${Identifier.ENTITY_TYPE.TYPE_DEVICE}(s) "${device}"`,
                     `${Identifier.ENTITY_TYPE.TYPE_DEVICE_GROUP} "${dg}"`)
             );
         }
@@ -149,6 +149,18 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                         _checkAlreadyAssignedDeviceMessage(commandOut, config.devices[config.deviceidx], dg_id);
                         ImptTestHelper.checkSuccessStatus(commandOut);
                     })).
+                    then(_checkAssignDevice).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
+
+            it('device assign multiple devices to dg', (done) => {
+                const devices = Array(3).fill(config.devices[config.deviceidx]).
+                    map((device) => `-d ${device}`).join(' ');
+                ImptTestHelper.runCommand(`impt device assign ${devices} -g ${dg_id} -q ${outputMode}`, (commandOut) => {
+                    _checkSuccessAssignedDeviceMessage(commandOut, config.devices[config.deviceidx], dg_id);
+                    ImptTestHelper.checkSuccessStatus(commandOut);
+                }).
                     then(_checkAssignDevice).
                     then(done).
                     catch(error => done.fail(error));

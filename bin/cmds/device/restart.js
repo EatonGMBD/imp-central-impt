@@ -39,12 +39,17 @@ exports.describe = COMMAND_SHORT_DESCR;
 exports.builder = function (yargs) {
     const options = Options.getOptions({
         [Options.ACCOUNT] : false,
-        [Options.DEVICE_IDENTIFIER] : true,
+        [Options.DEVICE_IDENTIFIER] : {
+            demandOption : true,
+            type : 'array',
+            elemType : 'string'
+        },
         [Options.CONDITIONAL] : false,
         [Options.LOG] : {
             demandOption : false,
-            describe : 'Start displaying logs from the specified device (see impt log stream command description).' +
-                ' To stop displaying the logs press <Ctrl-C>.'
+            describe : 'Starts displaying logs from the specified device (see the impt log stream command description).' +
+                ' To stop displaying the logs, press <Ctrl-C>. Optional value specifies the format of timestamps in the logs.' +
+                ' If the value is not specified, the full format is assumed.'
         },
         [Options.OUTPUT] : false
     });
