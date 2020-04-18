@@ -19,6 +19,7 @@
 **[impt build copy](#build-copy)**<br />
 **[impt build delete](#build-delete)**<br />
 **[impt build deploy](#build-deploy)**<br />
+**[impt build generate](#build-generate)**<br />
 **[impt build get](#build-get)**<br />
 **[impt build info](#build-info)**<br />
 **[impt build list](#build-list)**<br />
@@ -744,6 +745,30 @@ The new build is not run until the devices are rebooted. To run it, call [`impt 
 | --origin | -o | No | Yes | A free-form key to store a link to the code’s storage location, eg. a GitHub repo name or URL |
 | --tag | -t | No | Yes | A tag applied to this build (Deployment). This option may be repeated multiple times to apply multiple tags |
 | --flagged | -f | No | No | If `true` or no value, this build (Deployment) cannot be deleted without first setting this option back to `false`. If `false` or the option is not specified, the build can be deleted |
+| --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
+| --help | -h | No | No | Displays a description of the command. Ignores any other options |
+
+#### Build Generate ####
+
+```
+impt build generate [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>]
+    [--device-file <device_file>] [--agent-file <agent_file>]
+    [--origin <origin>] [--output <mode>] [--help]
+```
+
+Generates a build artifact from the specified source files, and outputs the artifacts to the build folder.
+
+The command fails if one or both of the specified source files do not exist, or the specified Device Group does not exist. The Device Group Id is used to fetch device group specific settings from the Project File.
+
+No deployment is run as a part of this command, only the reusable assets are generated to the build folder.
+
+| Option | Alias | Mandatory? | Value Required? | Description |
+| --- | --- | --- | --- | --- |
+| --account | -ac | No | Yes | The authenticated account identifier: an account ID |
+| --dg | -g | Yes/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). If not specified, the Device Group referenced by the [Project file](#project-files) in the current directory is used (if there is no Project file, the command fails) |
+| --device-file | -x | No | Yes | The device source code file name. If not specified, the file referenced by the [Project file](#project-files) in the current directory is used; if there is no Project file, empty code is used. If the specified file does not exist, the command fails |
+| --agent-file | -y | No | Yes | The agent source code file name. If not specified, the file referenced by the [Project file](#project-files) in the current directory is used; if there is no Project file, empty code is used. If the specified file does not exist, the command fails |
+| --origin | -o | No | Yes | A free-form key to store a link to the code’s storage location, eg. a GitHub repo name or URL |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
