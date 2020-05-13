@@ -1679,7 +1679,7 @@ At the end of the command execution, information about the test configuration is
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. Default: `"*.test.nut"` `"tests/**/*.test.nut"` |
 | --github-config | -i | No | Yes | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist |
 | --bitbucket-srv-config | -b | No | Yes | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist |
-| --azure-repos-config | -b | No | Yes | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist |
+| --azure-repos-config | -az | No | Yes | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist |
 | --builder-config | -j | No | Yes | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -1715,7 +1715,7 @@ The user is asked to confirm the operation unless confirmed automatically with t
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --github-config | -i | No | No | Also deletes the GitHub credentials file referenced by [test configuration file](#test-configuration-files) |
 | --bitbucket-srv-config | -b | No | No | Also deletes the Bitbucket Server credentials file referenced by [test configuration file](#test-configuration-files) |
-| --azure-repos-config | -b | No | No | Also deletes the Azure Repos credentials file referenced by [test configuration file](#test-configuration-files) |
+| --azure-repos-config | -az | No | No | Also deletes the Azure Repos credentials file referenced by [test configuration file](#test-configuration-files) |
 | --builder-config | -j | No | No | Also deletes the file with *Builder* variables referenced by [test configuration file](#test-configuration-files) |
 | --entities | -e | No | No | Also deletes the impCentral API entities (Device Group, Product, Deployments) referenced by [test configuration file](#test-configuration-files). See above. |
 | --all | -a | No | No | Includes `--github-config`, `--builder-config` and `--entities` options |
@@ -1795,7 +1795,7 @@ If the `--user` option is not specified, the user is asked to input the Azure Re
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --azure-repos-config | -b | Yes | Yes | A path to the Azure Repos credentials file. A relative or absolute path can be used |
+| --azure-repos-config | -az | Yes | Yes | A path to the Azure Repos credentials file. A relative or absolute path can be used |
 | --user | -u | No | Yes | An Azure Repos account username |
 | --pwd | -w | No | Yes | An Azure Repos account password or personal access token. If specified, the `--user` option must also be specified |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
@@ -1861,7 +1861,7 @@ At the end of the command execution, information about the test configuration is
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. The specified values fully replace the existed setting |
 | --github-config | -i | No | No | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a GitHub credentials file from the test configuration |
 | --bitbucket-srv-config | -b | No | No | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a Bitbucket Server credentials file from the test configuration |
-| --azure-repos-config | -b | No | No | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove an Azure Repos credentials file from the test configuration |
+| --azure-repos-config | -az | No | No | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove an Azure Repos credentials file from the test configuration |
 | --builder-config | -j | No | No | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a file with *Builder* variables from the test configuration |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
@@ -1971,6 +1971,7 @@ Updates the specified webhook with a new target URL and/or MIME content-type. Fa
 | --- | --- |
 | -a | --all, --assigned, --allow-disconnect, --bitbucket-srv-addr |
 | -ac | --account |
+| -az | --azure-repos-config |
 | -b | --build, --builds, --bitbucket-srv-config |
 | -c | --create-product, --conditional |
 | -d | --device |
