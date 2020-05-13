@@ -61,6 +61,16 @@ exports.builder = function (yargs) {
             _usage: '',
             describe : 'Also deletes the Bitbucket Server credentials file referenced by test configuration file.'
         },
+        [Options.AZURE_REPOS_CONFIG] : {
+            demandOption : false,
+            nargs : 0,
+            type : 'boolean',
+            noValue : true,
+            default : undefined,
+            requiresArg : false,
+            _usage: '',
+            describe : 'Also deletes the Azure Repos credentials file referenced by test configuration file.'
+        },
         [Options.BUILDER_CONFIG] : {
             demandOption : false,
             nargs: 0,
@@ -78,7 +88,7 @@ exports.builder = function (yargs) {
         [Options.ALL] : {
             demandOption : false,
             describe: Util.format('Includes --%s, --%s, --%s and --%s options.',
-                Options.GITHUB_CONFIG, Options.BITBUCKET_SERVER_CONFIG, Options.BUILDER_CONFIG, Options.ENTITIES)
+                Options.GITHUB_CONFIG, Options.BITBUCKET_SERVER_CONFIG, Options.AZURE_REPOS_CONFIG, Options.BUILDER_CONFIG, Options.ENTITIES)
         },
         [Options.CONFIRMED] : false,
         [Options.OUTPUT] : false
