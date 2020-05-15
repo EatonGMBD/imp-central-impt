@@ -25,6 +25,8 @@
 'use strict';
 
 require('jasmine-expect');
+const Shell = require('shelljs');
+const FS = require('fs');
 const config = require('../config');
 const ImptTestHelper = require('../ImptTestHelper');
 const Identifier = require('../../lib/util/Identifier');
@@ -155,6 +157,22 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     then(done).
                     catch(error => done.fail(error));
             });
+
+            it('device group create with env vars', (done) => {
+                Shell.cp('-Rf', `${__dirname}/fixtures/env_vars.cfg`, ImptTestHelper.TESTS_EXECUTION_FOLDER);
+                ImptTestHelper.runCommand(`impt dg create --name ${DEVICE_GROUP_NAME} --envvars env_vars.cfg --product ${product_id} ${outputMode}`, (commandOut) => {
+                    dg_id = ImptTestHelper.parseId(commandOut);
+                    expect(dg_id).not.toBeNull;
+                    _checkDeviceGroupCreateResult(commandOut);
+                    ImptTestHelper.checkSuccessStatus(commandOut);
+                }).
+                    then(() => ImptDgTestHelper.checkDeviceGroupInfo({
+                        id: dg_id,
+                        env_vars: JSON.parse(FS.readFileSync(`${__dirname}/fixtures/env_vars.cfg`).toString()) 
+                    })).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
         });
 
         describe('device group create negative tests >', () => {
@@ -179,6 +197,25 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
             it('create duplicate device group', (done) => {
                 ImptTestHelper.runCommand(`impt dg create -n ${DEVICE_GROUP_EXIST_NAME} -p ${PRODUCT_NAME} ${outputMode}`, (commandOut) => {
                     MessageHelper.checkDuplicateResourceError(commandOut, 'Devicegroup');
+                    ImptTestHelper.checkFailStatus(commandOut);
+                }).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
+
+            it('device group create with absent env vars', (done) => {
+                ImptTestHelper.runCommand(`impt dg create --name ${DEVICE_GROUP_NAME} --envvars absent_env_vars.cfg --product ${product_id} ${outputMode}`, (commandOut) => {
+                    MessageHelper.checkConfigNotFoundMessage(commandOut, 'Environment Variables');
+                    ImptTestHelper.checkFailStatus(commandOut);
+                }).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
+
+            it('device group create with corrupted env vars', (done) => {
+                Shell.cp('-Rf', `${__dirname}/fixtures/corrupted_env_vars.cfg`, ImptTestHelper.TESTS_EXECUTION_FOLDER);
+                ImptTestHelper.runCommand(`impt dg create --name ${DEVICE_GROUP_NAME} --envvars corrupted_env_vars.cfg --product ${product_id} ${outputMode}`, (commandOut) => {
+                    MessageHelper.checkConfigCorruptedMessage(commandOut, 'Environment Variables');
                     ImptTestHelper.checkFailStatus(commandOut);
                 }).
                     then(done).
