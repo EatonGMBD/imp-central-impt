@@ -1,6 +1,6 @@
 # impt Commands Manual #
 
-**Note** Some of the commands in this file have been changed to support multiple accounts in the [Auth file](#auth-files) and multiple device groups and in the [Project File](#project-files). While we added some untested new features, other old features have not been re-tested.
+**Note** Some of the commands in this file have been changed to support multiple accounts in the [Auth file](#auth-files) and multiple device groups and in the [Project File](#project-files). These features are untested.
 
 ## List Of Commands ##
 
@@ -1070,7 +1070,8 @@ The user is asked to confirm the operation if any Deployment is going to be dele
 impt dg create [--account <account_id>] --name <device_group_name> [--dg-type <device_group_type>]
     [--product <PRODUCT_IDENTIFIER>] [--descr <device_group_description>]
     [--dut <DEVICE_GROUP_IDENTIFIER>] [--target <DEVICE_GROUP_IDENTIFIER>]
-    [--region <region_name>] [--output <mode>] [--help]
+    [--region <region_name>] [--envvars <envvars_file_name>]
+    [--output <mode>] [--help]
 ```
 
 Creates a new Device Group for the specified Product. Fails if a Device Group with the specified name already exists under the specified Product.
@@ -1085,6 +1086,7 @@ Creates a new Device Group for the specified Product. Fails if a Device Group wi
 | --dut | -u | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target device-under-test Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *dut* or *pre-dut*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --target | -t | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target production Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *production* or *pre-production*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --region | -r | No | Yes | A region. May be specified if the new Device Group is of the *production* or *pre-production* [type](#device-group-type) only |
+| --envvars | -e | No | Yes | A path to a file with [User-defined Environment Variables (__VARS)](https://developer.electricimp.com/tools/impcentral/environmentvariables). A relative or absolute path can be used. The file should contain a valid json object with the specified variables |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1214,7 +1216,8 @@ impt dg update [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--name
     [--descr <device_group_description>]
     [--dut <DEVICE_GROUP_IDENTIFIER>] [--target <DEVICE_GROUP_IDENTIFIER>]
     [--load-code-after-blessing [true|false]]
-    [--min-supported-deployment <BUILD_IDENTIFIER>] [--output <mode>] [--help]
+    [--min-supported-deployment <BUILD_IDENTIFIER>] [--envvars <envvars_file_name>]
+    [--output <mode>] [--help]
 ```
 
 Updates the specified Device Group. Fails if the specified Device Group does not exist.
@@ -1229,6 +1232,7 @@ Updates the specified Device Group. Fails if the specified Device Group does not
 | --target | -t | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target production Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *production* or *pre-production*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --load-code-after-blessing | -l | No | No | Only applicable to *production* and *pre-production* Device Groups. If `true` or no value is supplied, production application code is immediately loaded by the device after blessing. If `false`, production code will be loaded when the device first connects as part of BlinkUp. Newly created Production Device Groups default this setting to `true` |
 | --min-supported-deployment | -m | No | Yes | The [Build identifier](#build-identifier) of the new *min_supported_deployment* (see the impCentral API specification). The Deployment should belong to this Device Group and should be newer than the current *min_supported_deployment* |
+| --envvars | -e | No | Yes | A path to a file with [User-defined Environment Variables (__VARS)](https://developer.electricimp.com/tools/impcentral/environmentvariables). A relative or absolute path can be used. The file should contain a valid json object with the specified variables. An empty file or an empty json object deletes the variable |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1916,7 +1920,7 @@ Updates the specified webhook with a new target URL and/or MIME content-type. Fa
 | -b | --build, --builds, --bitbucket-srv-config |
 | -c | --create-product, --conditional |
 | -d | --device |
-| -e | --endpoint, --entities, --event, --builder-cache, --clear-cache |
+| -e | --endpoint, --entities, --event, --builder-cache, --clear-cache, --envvars |
 | -f | --force, --files, --pre-factory, --from, --flagged, --offline, --test-file |
 | -g | --dg |
 | -h | --help |

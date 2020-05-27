@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+### Added ###
+
+- `impt build generate` command to output reproducible artifacts to a build folder
+- setting of User-defined Environment Variables in `impt dg create` and `impt dg update` commands 
+
 ## [v2.5.0-etn] - 2020-04-06
 
 ### Added ###
@@ -25,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `impt dg restart`
   - `impt log stream`
   - `impt log get`
-- Added `impt build generate` to output reproducible artifacts to a build folder.
 
 ### Changed ###
 
