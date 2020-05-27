@@ -25,6 +25,8 @@
 'use strict';
 
 require('jasmine-expect');
+const Shell = require('shelljs');
+const FS = require('fs');
 const config = require('../config');
 const ImptTestHelper = require('../ImptTestHelper');
 const Identifier = require('../../lib/util/Identifier');
@@ -163,9 +165,23 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     then(done).
                     catch(error => done.fail(error));
             });
+
+            it('update device group env vars', (done) => {
+                Shell.cp('-Rf', `${__dirname}/fixtures/env_vars.cfg`, ImptTestHelper.TESTS_EXECUTION_FOLDER);
+                ImptTestHelper.runCommand(`impt dg update --dg ${dg_id} --envvars env_vars.cfg ${outputMode}`, (commandOut) => {
+                    _checkSuccessUpdatedDeviceGroupMessage(commandOut, dg_id);
+                    ImptTestHelper.checkSuccessStatus(commandOut);
+                }).
+                    then(() => ImptDgTestHelper.checkDeviceGroupInfo({
+                        id: dg_id,
+                        env_vars: JSON.parse(FS.readFileSync(`${__dirname}/fixtures/env_vars.cfg`).toString()) 
+                    })).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
         });
 
-        describe('device group create negative tests >', () => {
+        describe('device group update negative tests >', () => {
             it('update device group by not exist project', (done) => {
                 ImptTestHelper.runCommand(`impt dg update -n ${DEVICE_GROUP_NEW_NAME} -s "${DEVICE_GROUP_NEW_DESCR}" ${outputMode}`, (commandOut) => {
                     MessageHelper.checkNoIdentifierIsSpecifiedMessage(commandOut, MessageHelper.DG);
@@ -180,6 +196,29 @@ ImptTestHelper.OUTPUT_MODES.forEach((outputMode) => {
                     MessageHelper.checkEntityNotFoundError(commandOut, MessageHelper.DG, 'not-exist-device-group');
                     ImptTestHelper.checkFailStatus(commandOut);
                 }).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
+
+            it('update device group with absent env vars', (done) => {
+                _testInit().
+                    then(() => ImptTestHelper.runCommand(`impt dg update -g ${dg_id} --envvars absent_env_vars.cfg ${outputMode}`, (commandOut) => {
+                        MessageHelper.checkConfigNotFoundMessage(commandOut, 'Environment Variables');
+                        ImptTestHelper.checkFailStatus(commandOut);
+                    })).
+                    then(_testCleanUp).
+                    then(done).
+                    catch(error => done.fail(error));
+            });
+
+            it('update device group with corrupted env vars', (done) => {
+                Shell.cp('-Rf', `${__dirname}/fixtures/corrupted_env_vars.cfg`, ImptTestHelper.TESTS_EXECUTION_FOLDER);
+                _testInit().
+                    then(() => ImptTestHelper.runCommand(`impt dg update -g ${dg_id} --envvars corrupted_env_vars.cfg ${outputMode}`, (commandOut) => {
+                        MessageHelper.checkConfigCorruptedMessage(commandOut, 'Environment Variables');
+                        ImptTestHelper.checkFailStatus(commandOut);
+                    })).
+                    then(_testCleanUp).
                     then(done).
                     catch(error => done.fail(error));
             });
