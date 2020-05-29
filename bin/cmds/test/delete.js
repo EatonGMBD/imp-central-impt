@@ -87,7 +87,7 @@ exports.builder = function (yargs) {
         },
         [Options.ALL] : {
             demandOption : false,
-            describe: Util.format('Includes --%s, --%s, --%s and --%s options.',
+            describe: Util.format('Includes --%s, --%s, --%s, --%s and --%s options.',
                 Options.GITHUB_CONFIG, Options.BITBUCKET_SERVER_CONFIG, Options.AZURE_REPOS_CONFIG, Options.BUILDER_CONFIG, Options.ENTITIES)
         },
         [Options.CONFIRMED] : false,
