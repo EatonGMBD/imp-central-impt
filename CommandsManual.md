@@ -311,7 +311,7 @@ The Auth file is of the form:
         "profileType": "bitbucketSrv"
     },
     "AZURE_REPOS_USERNAME": {
-        "azureReposUser": "AZURE_REPOS_USER",
+        "azureReposUser": "AZURE_REPOS_USERNAME",
         "azureReposToken": "AZURE_REPOS_TOKEN",
         "profileType": "azureRepos"
     }
