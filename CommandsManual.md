@@ -14,6 +14,7 @@
 **[impt auth select](#auth-select)**<br />
 **[impt auth github](#auth-github)**<br />
 **[impt auth bitbucket-server](#auth-bitbucket-server)**<br />
+**[impt auth azure-repos](#auth-azure-repos)**<br />
 
 **[impt build cleanup](#build-cleanup)**<br />
 **[impt build copy](#build-copy)**<br />
@@ -69,6 +70,7 @@
 **[impt test delete](#test-delete)**<br />
 **[impt test github](#test-github)**<br />
 **[impt test bitbucket-server](#test-bitbucket-server)**<br />
+**[impt test azure-repos](#test-azure-repos)**<br />
 **[impt test info](#test-info)**<br />
 **[impt test run](#test-run)**<br />
 **[impt test update](#test-update)**<br />
@@ -263,6 +265,11 @@ If the `profileType` is "bitbucketSrv", the following contents are included:
 - `bitbucketSrvToken`: Bitbucket Server password
 - `profileType`: "bitbucketSrv"
 
+If the `profileType` is "azureRepos", the following contents are included:
+- `azureReposUser`: Azure Repos username
+- `azureReposToken`: Azure Repos password or personal access token
+- `profileType`: "azureRepos"
+
 The Auth file is of the form:
 
 ```JSON
@@ -302,6 +309,11 @@ The Auth file is of the form:
         "bitbucketSrvUser": "BITBUCKET_SERVER_USER",
         "bitbucketSrvToken": "BITBUCKET_SERVER_TOKEN",
         "profileType": "bitbucketSrv"
+    },
+    "AZURE_REPOS_USERNAME": {
+        "azureReposUser": "AZURE_REPOS_USERNAME",
+        "azureReposToken": "AZURE_REPOS_TOKEN",
+        "profileType": "azureRepos"
     }
 }
 ```
@@ -648,6 +660,22 @@ Adds Bitbucket Server address and credentials to the auth file.
 | --bitbucket-srv-addr | -a | No | Yes | a Bitbucket Server address. E.g., "https://bitbucket-srv.itd.example.com" |
 | --user | -u | No | Yes | a Bitbucket Server account username |
 | --pwd | -w | No | Yes | a Bitbucket Server account password or personal access token |
+| --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
+| --help | -h | No | No | Displays a description of the command. Ignores any other options |
+
+#### Auth Azure Repos ####
+
+```
+impt auth azure-repos [--local] [--user <azure_repos_username>] [--pwd <azure_repos_password>] [--output <mode>] [--help]
+```
+
+Adds Azure Repos credentials to the auth file.
+
+| Option | Alias | Mandatory? | Value Required? | Description |
+| --- | --- | --- | --- | --- |
+| --local | -l | No | No | If specified, creates or replaces a [local auth file](#local-auth-file) in the current directory. If not specified, creates or replaces the [global auth file](#global-auth-file) |
+| --user | -u | No | Yes | an Azure Repos account username |
+| --pwd | -w | No | Yes | an Azure Repos account password or personal access token |
 | --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1632,8 +1660,8 @@ impt test create [--account <account_id>] --dg <DEVICE_GROUP_IDENTIFIER> [--devi
     [--agent-file <agent_file>] [--timeout <timeout>] [--stop-on-fail [true|false]]
     [--allow-disconnect [true|false]] [--builder-cache [true|false]]
     [--test-file <test_file_name_pattern>] [--github-config <github_credentials_file_name>]
-    [--bitbucket-srv-config <bitbucket_server_credentials_file_name>] [--builder-config <builder_file_name>]
-    [--confirmed] [--output <mode>] [--help]
+    [--bitbucket-srv-config <bitbucket_server_credentials_file_name>] [--azure-repos-config <azure_repos_credentials_file_name>]
+    [--builder-config <builder_file_name>] [--confirmed] [--output <mode>] [--help]
 ```
 
 Creates a [test configuration file](#test-configuration-files) in the current directory.
@@ -1655,6 +1683,7 @@ At the end of the command execution, information about the test configuration is
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. Default: `"*.test.nut"` `"tests/**/*.test.nut"` |
 | --github-config | -i | No | Yes | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist |
 | --bitbucket-srv-config | -b | No | Yes | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist |
+| --azure-repos-config | -r | No | Yes | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist |
 | --builder-config | -j | No | Yes | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -1663,8 +1692,8 @@ At the end of the command execution, information about the test configuration is
 #### Test Delete ####
 
 ```
-impt test delete [--account <account_id>] [--github-config] [--bitbucket-srv-config] [--builder-config]
-    [--entities] [--all] [--confirmed] [--output <mode>] [--help]
+impt test delete [--account <account_id>] [--github-config] [--bitbucket-srv-config] [--azure-repos-config]
+    [--builder-config] [--entities] [--all] [--confirmed] [--output <mode>] [--help]
 ```
 
 Deletes the [test configuration file](#test-configuration-files) in the current directory. Does nothing if there is no [test configuration file](#test-configuration-files) in the current directory.
@@ -1676,6 +1705,7 @@ The following entities are deleted (if the exist):
 - Debug information (`.build` directory) in the current directory.
 - If the `--github-config` option is specified, the GitHub credentials file referenced by the test configuration file.
 - If the `--bitbucket-srv-config` option is specified, the Bitbucket Server credentials file referenced by the test configuration file.
+- If the `--azure-repos-config` option is specified, the Azure Repos credentials file referenced by the test configuration file.
 - If the `--builder-config` option is specified, the file with *Builder* variables referenced by the test configuration file.
 - If the `--entities` option is specified:
     - The Device Group referenced by the test configuration file. All Devices are unassigned from that Device Group.
@@ -1689,6 +1719,7 @@ The user is asked to confirm the operation unless confirmed automatically with t
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --github-config | -i | No | No | Also deletes the GitHub credentials file referenced by [test configuration file](#test-configuration-files) |
 | --bitbucket-srv-config | -b | No | No | Also deletes the Bitbucket Server credentials file referenced by [test configuration file](#test-configuration-files) |
+| --azure-repos-config | -r | No | No | Also deletes the Azure Repos credentials file referenced by [test configuration file](#test-configuration-files) |
 | --builder-config | -j | No | No | Also deletes the file with *Builder* variables referenced by [test configuration file](#test-configuration-files) |
 | --entities | -e | No | No | Also deletes the impCentral API entities (Device Group, Product, Deployments) referenced by [test configuration file](#test-configuration-files). See above. |
 | --all | -a | No | No | Includes `--github-config`, `--builder-config` and `--entities` options |
@@ -1750,6 +1781,31 @@ If the `--user` option is not specified, the user is asked to input the Bitbucke
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
+#### Test Azure Repos ####
+
+```
+impt test azure-repos [--account <account_id>] --azure-repos-config <azure_repos_credentials_file_name>
+    [--user <azure_repos_username> [--pwd <azure_repos_password>]] [--confirmed] [--output <mode>] [--help]
+```
+
+Creates or updates an Azure Repos credentials file.
+
+**Note** This command does **not** write the created or updated Azure Repos credentials file to any [test configuration file](#test-configuration-files). Use [`impt test create`](#test-create) or [`impt test update`](#test-update) to apply the Azure Repos credentials to tests.
+
+The user is asked to confirm the operation if the specified Azure Repos credentials file already exists, unless confirmed automatically with the `--confirmed` option. If confirmed, the existing Azure Repos credentials file is overwritten.
+
+If the `--user` option is not specified, the user is asked to input the Azure Repos credentials. If the `--user` option is specified but the `--pwd` option is not, the user is asked to input the Azure Repos account password or personal access token.
+
+| Option | Alias | Mandatory? | Value Required? | Description |
+| --- | --- | --- | --- | --- |
+| --account | -ac | No | Yes | The authenticated account identifier: an account ID |
+| --azure-repos-config | -r | Yes | Yes | A path to the Azure Repos credentials file. A relative or absolute path can be used |
+| --user | -u | No | Yes | An Azure Repos account username |
+| --pwd | -w | No | Yes | An Azure Repos account password or personal access token. If specified, the `--user` option must also be specified |
+| --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
+| --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
+| --help | -h | No | No | Displays a description of the command. Ignores any other options |
+
 #### Test Info ####
 
 ```
@@ -1788,6 +1844,7 @@ impt test update [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--de
     [--allow-disconnect [true|false]] [--builder-cache [true|false]]
     [--test-file <test_file_name_pattern>] [--github-config [<github_credentials_file_name>]]
     [--bitbucket-srv-config [<bitbucket_server_credentials_file_name>]]
+    [--azure-repos-config [<azure_repos_credentials_file_name>]]
     [--builder-config [<builder_file_name>]] [--output <mode>] [--help]
 ```
 
@@ -1808,6 +1865,7 @@ At the end of the command execution, information about the test configuration is
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. The specified values fully replace the existed setting |
 | --github-config | -i | No | No | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a GitHub credentials file from the test configuration |
 | --bitbucket-srv-config | -b | No | No | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a Bitbucket Server credentials file from the test configuration |
+| --azure-repos-config | -r | No | No | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove an Azure Repos credentials file from the test configuration |
 | --builder-config | -j | No | No | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a file with *Builder* variables from the test configuration |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
@@ -1933,7 +1991,7 @@ Updates the specified webhook with a new target URL and/or MIME content-type. Fa
 | -o | --owner, --origin, --unflag-old |
 | -p | --product |
 | -q | --confirmed |
-| -r | --create-target, --remove-tag, --remove, --region |
+| -r | --azure-repos-config, --create-target, --remove-tag, --remove, --region |
 | -s | --descr, --sha, --page-size, --stop-on-fail |
 | -t | --tag, --timeout, --temp, --target, --to, --tests |
 | -u | --user, --full, --unflagged, --unflag, --unassigned, --unbond, --url, --dut |

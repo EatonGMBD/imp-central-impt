@@ -10,7 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added ###
 
 - `impt build generate` command to output reproducible artifacts to a build folder
-- setting of User-defined Environment Variables in `impt dg create` and `impt dg update` commands 
+- Setting of User-defined Environment Variables in `impt dg create` and `impt dg update` commands 
+- Support for ADO Repos as a file source for Builder. Includes:
+  - `impt auth azure-repos` command
+  - `impt test azure-repos` command
+  - using ADO Repos credentials from a file during test deployment creation
+  - using ADO Repos credentials from auth file or environment variables during deployment creation
 
 ## [v2.5.0-etn] - 2020-04-06
 

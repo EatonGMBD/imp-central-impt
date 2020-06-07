@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright 2018 Electric Imp
+// Copyright 2018-2020 Electric Imp
 //
 // SPDX-License-Identifier: MIT
 //
@@ -98,6 +98,15 @@ exports.builder = function (yargs) {
             nargs: 0,
             default : undefined,
             _usage: '[<bitbucket_server_credentials_file_name>]'
+        },
+        [Options.AZURE_REPOS_CONFIG] : {
+            demandOption : false,
+            describe : 'A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist.' +
+                ' Specify this option without a value to remove an Azure Repos credentials file from the test configuration.',
+            requiresArg : false,
+            nargs: 0,
+            default : undefined,
+            _usage: '[<azure_repos_credentials_file_name>]'
         },
         [Options.BUILDER_CONFIG] : {
             demandOption : false,
