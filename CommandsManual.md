@@ -1,6 +1,6 @@
 # impt Commands Manual #
 
-**Note** Some of the commands in this file have been changed to support multiple accounts in the [Auth file](#auth-files) and multiple device groups and in the [Project File](#project-files). These features are untested.
+**Note** Some of the commands in this file have been changed to support multiple accounts in the [Auth file](#auth-files) and multiple device groups and in the [Project File](#project-files). While we added some untested new features, other old features have not been re-tested.
 
 ## List Of Commands ##
 
@@ -14,13 +14,11 @@
 **[impt auth select](#auth-select)**<br />
 **[impt auth github](#auth-github)**<br />
 **[impt auth bitbucket-server](#auth-bitbucket-server)**<br />
-**[impt auth azure-repos](#auth-azure-repos)**<br />
 
 **[impt build cleanup](#build-cleanup)**<br />
 **[impt build copy](#build-copy)**<br />
 **[impt build delete](#build-delete)**<br />
 **[impt build deploy](#build-deploy)**<br />
-**[impt build generate](#build-generate)**<br />
 **[impt build get](#build-get)**<br />
 **[impt build info](#build-info)**<br />
 **[impt build list](#build-list)**<br />
@@ -70,7 +68,6 @@
 **[impt test delete](#test-delete)**<br />
 **[impt test github](#test-github)**<br />
 **[impt test bitbucket-server](#test-bitbucket-server)**<br />
-**[impt test azure-repos](#test-azure-repos)**<br />
 **[impt test info](#test-info)**<br />
 **[impt test run](#test-run)**<br />
 **[impt test update](#test-update)**<br />
@@ -265,11 +262,6 @@ If the `profileType` is "bitbucketSrv", the following contents are included:
 - `bitbucketSrvToken`: Bitbucket Server password
 - `profileType`: "bitbucketSrv"
 
-If the `profileType` is "azureRepos", the following contents are included:
-- `azureReposUser`: Azure Repos username
-- `azureReposToken`: Azure Repos password or personal access token
-- `profileType`: "azureRepos"
-
 The Auth file is of the form:
 
 ```JSON
@@ -309,11 +301,6 @@ The Auth file is of the form:
         "bitbucketSrvUser": "BITBUCKET_SERVER_USER",
         "bitbucketSrvToken": "BITBUCKET_SERVER_TOKEN",
         "profileType": "bitbucketSrv"
-    },
-    "AZURE_REPOS_USERNAME": {
-        "azureReposUser": "AZURE_REPOS_USERNAME",
-        "azureReposToken": "AZURE_REPOS_TOKEN",
-        "profileType": "azureRepos"
     }
 }
 ```
@@ -663,22 +650,6 @@ Adds Bitbucket Server address and credentials to the auth file.
 | --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
-#### Auth Azure Repos ####
-
-```
-impt auth azure-repos [--local] [--user <azure_repos_username>] [--pwd <azure_repos_password>] [--output <mode>] [--help]
-```
-
-Adds Azure Repos credentials to the auth file.
-
-| Option | Alias | Mandatory? | Value Required? | Description |
-| --- | --- | --- | --- | --- |
-| --local | -l | No | No | If specified, creates or replaces a [local auth file](#local-auth-file) in the current directory. If not specified, creates or replaces the [global auth file](#global-auth-file) |
-| --user | -u | No | Yes | an Azure Repos account username |
-| --pwd | -w | No | Yes | an Azure Repos account password or personal access token |
-| --output | -z | No | Yes | Adjusts the [command's output](#command-output) |
-| --help | -h | No | No | Displays a description of the command. Ignores any other options |
-
 ### Build Manipulation Commands ###
 
 #### Build Cleanup ####
@@ -773,30 +744,6 @@ The new build is not run until the devices are rebooted. To run it, call [`impt 
 | --origin | -o | No | Yes | A free-form key to store a link to the code’s storage location, eg. a GitHub repo name or URL |
 | --tag | -t | No | Yes | A tag applied to this build (Deployment). This option may be repeated multiple times to apply multiple tags |
 | --flagged | -f | No | No | If `true` or no value, this build (Deployment) cannot be deleted without first setting this option back to `false`. If `false` or the option is not specified, the build can be deleted |
-| --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
-| --help | -h | No | No | Displays a description of the command. Ignores any other options |
-
-#### Build Generate ####
-
-```
-impt build generate [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>]
-    [--device-file <device_file>] [--agent-file <agent_file>]
-    [--origin <origin>] [--output <mode>] [--help]
-```
-
-Generates a build artifact from the specified source files, and outputs the artifacts to the build folder.
-
-The command fails if one or both of the specified source files do not exist, or the specified Device Group does not exist. The Device Group Id is used to fetch device group specific settings from the Project File.
-
-No deployment is run as a part of this command, only the reusable assets are generated to the build folder.
-
-| Option | Alias | Mandatory? | Value Required? | Description |
-| --- | --- | --- | --- | --- |
-| --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --dg | -g | Yes/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). If not specified, the Device Group referenced by the [Project file](#project-files) in the current directory is used (if there is no Project file, the command fails) |
-| --device-file | -x | No | Yes | The device source code file name. If not specified, the file referenced by the [Project file](#project-files) in the current directory is used; if there is no Project file, empty code is used. If the specified file does not exist, the command fails |
-| --agent-file | -y | No | Yes | The agent source code file name. If not specified, the file referenced by the [Project file](#project-files) in the current directory is used; if there is no Project file, empty code is used. If the specified file does not exist, the command fails |
-| --origin | -o | No | Yes | A free-form key to store a link to the code’s storage location, eg. a GitHub repo name or URL |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1098,8 +1045,7 @@ The user is asked to confirm the operation if any Deployment is going to be dele
 impt dg create [--account <account_id>] --name <device_group_name> [--dg-type <device_group_type>]
     [--product <PRODUCT_IDENTIFIER>] [--descr <device_group_description>]
     [--dut <DEVICE_GROUP_IDENTIFIER>] [--target <DEVICE_GROUP_IDENTIFIER>]
-    [--region <region_name>] [--envvars <envvars_file_name>]
-    [--output <mode>] [--help]
+    [--region <region_name>] [--output <mode>] [--help]
 ```
 
 Creates a new Device Group for the specified Product. Fails if a Device Group with the specified name already exists under the specified Product.
@@ -1114,7 +1060,6 @@ Creates a new Device Group for the specified Product. Fails if a Device Group wi
 | --dut | -u | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target device-under-test Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *dut* or *pre-dut*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --target | -t | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target production Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *production* or *pre-production*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --region | -r | No | Yes | A region. May be specified if the new Device Group is of the *production* or *pre-production* [type](#device-group-type) only |
-| --envvars | -e | No | Yes | A path to a file with [User-defined Environment Variables (__VARS)](https://developer.electricimp.com/tools/impcentral/environmentvariables). A relative or absolute path can be used. The file should contain a valid json object with the specified variables |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1244,8 +1189,7 @@ impt dg update [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--name
     [--descr <device_group_description>]
     [--dut <DEVICE_GROUP_IDENTIFIER>] [--target <DEVICE_GROUP_IDENTIFIER>]
     [--load-code-after-blessing [true|false]]
-    [--min-supported-deployment <BUILD_IDENTIFIER>] [--envvars <envvars_file_name>]
-    [--output <mode>] [--help]
+    [--min-supported-deployment <BUILD_IDENTIFIER>] [--output <mode>] [--help]
 ```
 
 Updates the specified Device Group. Fails if the specified Device Group does not exist.
@@ -1260,7 +1204,6 @@ Updates the specified Device Group. Fails if the specified Device Group does not
 | --target | -t | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target production Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *production* or *pre-production*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --load-code-after-blessing | -l | No | No | Only applicable to *production* and *pre-production* Device Groups. If `true` or no value is supplied, production application code is immediately loaded by the device after blessing. If `false`, production code will be loaded when the device first connects as part of BlinkUp. Newly created Production Device Groups default this setting to `true` |
 | --min-supported-deployment | -m | No | Yes | The [Build identifier](#build-identifier) of the new *min_supported_deployment* (see the impCentral API specification). The Deployment should belong to this Device Group and should be newer than the current *min_supported_deployment* |
-| --envvars | -e | No | Yes | A path to a file with [User-defined Environment Variables (__VARS)](https://developer.electricimp.com/tools/impcentral/environmentvariables). A relative or absolute path can be used. The file should contain a valid json object with the specified variables. An empty file or an empty json object deletes the variable |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -1660,8 +1603,8 @@ impt test create [--account <account_id>] --dg <DEVICE_GROUP_IDENTIFIER> [--devi
     [--agent-file <agent_file>] [--timeout <timeout>] [--stop-on-fail [true|false]]
     [--allow-disconnect [true|false]] [--builder-cache [true|false]]
     [--test-file <test_file_name_pattern>] [--github-config <github_credentials_file_name>]
-    [--bitbucket-srv-config <bitbucket_server_credentials_file_name>] [--azure-repos-config <azure_repos_credentials_file_name>]
-    [--builder-config <builder_file_name>] [--confirmed] [--output <mode>] [--help]
+    [--bitbucket-srv-config <bitbucket_server_credentials_file_name>] [--builder-config <builder_file_name>]
+    [--confirmed] [--output <mode>] [--help]
 ```
 
 Creates a [test configuration file](#test-configuration-files) in the current directory.
@@ -1683,7 +1626,6 @@ At the end of the command execution, information about the test configuration is
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. Default: `"*.test.nut"` `"tests/**/*.test.nut"` |
 | --github-config | -i | No | Yes | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist |
 | --bitbucket-srv-config | -b | No | Yes | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist |
-| --azure-repos-config | -r | No | Yes | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist |
 | --builder-config | -j | No | Yes | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -1692,8 +1634,8 @@ At the end of the command execution, information about the test configuration is
 #### Test Delete ####
 
 ```
-impt test delete [--account <account_id>] [--github-config] [--bitbucket-srv-config] [--azure-repos-config]
-    [--builder-config] [--entities] [--all] [--confirmed] [--output <mode>] [--help]
+impt test delete [--account <account_id>] [--github-config] [--bitbucket-srv-config] [--builder-config]
+    [--entities] [--all] [--confirmed] [--output <mode>] [--help]
 ```
 
 Deletes the [test configuration file](#test-configuration-files) in the current directory. Does nothing if there is no [test configuration file](#test-configuration-files) in the current directory.
@@ -1705,7 +1647,6 @@ The following entities are deleted (if the exist):
 - Debug information (`.build` directory) in the current directory.
 - If the `--github-config` option is specified, the GitHub credentials file referenced by the test configuration file.
 - If the `--bitbucket-srv-config` option is specified, the Bitbucket Server credentials file referenced by the test configuration file.
-- If the `--azure-repos-config` option is specified, the Azure Repos credentials file referenced by the test configuration file.
 - If the `--builder-config` option is specified, the file with *Builder* variables referenced by the test configuration file.
 - If the `--entities` option is specified:
     - The Device Group referenced by the test configuration file. All Devices are unassigned from that Device Group.
@@ -1719,7 +1660,6 @@ The user is asked to confirm the operation unless confirmed automatically with t
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --github-config | -i | No | No | Also deletes the GitHub credentials file referenced by [test configuration file](#test-configuration-files) |
 | --bitbucket-srv-config | -b | No | No | Also deletes the Bitbucket Server credentials file referenced by [test configuration file](#test-configuration-files) |
-| --azure-repos-config | -r | No | No | Also deletes the Azure Repos credentials file referenced by [test configuration file](#test-configuration-files) |
 | --builder-config | -j | No | No | Also deletes the file with *Builder* variables referenced by [test configuration file](#test-configuration-files) |
 | --entities | -e | No | No | Also deletes the impCentral API entities (Device Group, Product, Deployments) referenced by [test configuration file](#test-configuration-files). See above. |
 | --all | -a | No | No | Includes `--github-config`, `--builder-config` and `--entities` options |
@@ -1781,31 +1721,6 @@ If the `--user` option is not specified, the user is asked to input the Bitbucke
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
-#### Test Azure Repos ####
-
-```
-impt test azure-repos [--account <account_id>] --azure-repos-config <azure_repos_credentials_file_name>
-    [--user <azure_repos_username> [--pwd <azure_repos_password>]] [--confirmed] [--output <mode>] [--help]
-```
-
-Creates or updates an Azure Repos credentials file.
-
-**Note** This command does **not** write the created or updated Azure Repos credentials file to any [test configuration file](#test-configuration-files). Use [`impt test create`](#test-create) or [`impt test update`](#test-update) to apply the Azure Repos credentials to tests.
-
-The user is asked to confirm the operation if the specified Azure Repos credentials file already exists, unless confirmed automatically with the `--confirmed` option. If confirmed, the existing Azure Repos credentials file is overwritten.
-
-If the `--user` option is not specified, the user is asked to input the Azure Repos credentials. If the `--user` option is specified but the `--pwd` option is not, the user is asked to input the Azure Repos account password or personal access token.
-
-| Option | Alias | Mandatory? | Value Required? | Description |
-| --- | --- | --- | --- | --- |
-| --account | -ac | No | Yes | The authenticated account identifier: an account ID |
-| --azure-repos-config | -r | Yes | Yes | A path to the Azure Repos credentials file. A relative or absolute path can be used |
-| --user | -u | No | Yes | An Azure Repos account username |
-| --pwd | -w | No | Yes | An Azure Repos account password or personal access token. If specified, the `--user` option must also be specified |
-| --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
-| --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
-| --help | -h | No | No | Displays a description of the command. Ignores any other options |
-
 #### Test Info ####
 
 ```
@@ -1844,7 +1759,6 @@ impt test update [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--de
     [--allow-disconnect [true|false]] [--builder-cache [true|false]]
     [--test-file <test_file_name_pattern>] [--github-config [<github_credentials_file_name>]]
     [--bitbucket-srv-config [<bitbucket_server_credentials_file_name>]]
-    [--azure-repos-config [<azure_repos_credentials_file_name>]]
     [--builder-config [<builder_file_name>]] [--output <mode>] [--help]
 ```
 
@@ -1865,7 +1779,6 @@ At the end of the command execution, information about the test configuration is
 | --test-file | -f | No | Yes | Test file name or pattern. All files located in the current directory and all its sub-directories whose names match the specified name or pattern are considered as files with test cases. This option may be repeated multiple times to specify multiple names and/or patterns. The values of the repeated option are combined by logical OR. The specified values fully replace the existed setting |
 | --github-config | -i | No | No | A path to a GitHub credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a GitHub credentials file from the test configuration |
 | --bitbucket-srv-config | -b | No | No | A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a Bitbucket Server credentials file from the test configuration |
-| --azure-repos-config | -r | No | No | A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove an Azure Repos credentials file from the test configuration |
 | --builder-config | -j | No | No | A path to a file with *Builder* variables. A relative or absolute path can be used. The specified file may not exist. Specify this option without a value to remove a file with *Builder* variables from the test configuration |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
@@ -1978,7 +1891,7 @@ Updates the specified webhook with a new target URL and/or MIME content-type. Fa
 | -b | --build, --builds, --bitbucket-srv-config |
 | -c | --create-product, --conditional |
 | -d | --device |
-| -e | --endpoint, --entities, --event, --builder-cache, --clear-cache, --envvars |
+| -e | --endpoint, --entities, --event, --builder-cache, --clear-cache |
 | -f | --force, --files, --pre-factory, --from, --flagged, --offline, --test-file |
 | -g | --dg |
 | -h | --help |
@@ -1991,7 +1904,7 @@ Updates the specified webhook with a new target URL and/or MIME content-type. Fa
 | -o | --owner, --origin, --unflag-old |
 | -p | --product |
 | -q | --confirmed |
-| -r | --azure-repos-config, --create-target, --remove-tag, --remove, --region |
+| -r | --create-target, --remove-tag, --remove, --region |
 | -s | --descr, --sha, --page-size, --stop-on-fail |
 | -t | --tag, --timeout, --temp, --target, --to, --tests |
 | -u | --user, --full, --unflagged, --unflag, --unassigned, --unbond, --url, --dut |

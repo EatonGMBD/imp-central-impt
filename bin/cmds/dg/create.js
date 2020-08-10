@@ -75,7 +75,6 @@ exports.builder = function (yargs) {
                 Options.DG_TYPE_FACTORY, Options.DG_TYPE_PRE_FACTORY, Options.DG_TYPE_PRODUCTION, Options.DG_TYPE_PRE_PRODUCTION)
         },
         [Options.REGION] : false,
-        [Options.ENVVARS] : false,
         [Options.OUTPUT] : false
     });
     return yargs

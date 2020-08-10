@@ -168,16 +168,6 @@ class MessageHelper {
         ImptTestHelper.checkAttribute(commandOut, UserInterractor.ERRORS.ERROR,
             UserInterractor.ERRORS.TEST_NO_FILES_FOUND);
     }
-
-    static checkConfigNotFoundMessage(commandOut, configType) {
-        ImptTestHelper.checkAttribute(commandOut, UserInterractor.ERRORS.ERROR,
-            Util.format(`${UserInterractor.ERRORS.CONFIG_NOT_FOUND}`, configType));
-    }
-
-    static checkConfigCorruptedMessage(commandOut, configType) {
-        ImptTestHelper.checkAttribute(commandOut, UserInterractor.ERRORS.ERROR,
-            Util.format(`${UserInterractor.ERRORS.CONFIG_CORRUPTED}`, configType));
-    }
 }
 
 module.exports = MessageHelper;
