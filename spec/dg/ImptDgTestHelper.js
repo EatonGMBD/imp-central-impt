@@ -75,6 +75,7 @@ class ImptDgTestHelper {
             expect(json['Device Group'].type).toBe('development');
             expect(json['Device Group'].Product.id).toBe(expInfo.p_id ? expInfo.p_id : json['Device Group'].Product.id);
             expect(json['Device Group'].Product.name).toBe(expInfo.p_name ? expInfo.p_name : PRODUCT_NAME);
+            if (expInfo['env_vars']) expect(json['Device Group'].env_vars).toEqual(expInfo.env_vars);
             ImptTestHelper.checkSuccessStatus(commandOut);
         });
     }

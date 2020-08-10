@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright 2018 Electric Imp
+// Copyright 2018-2020 Electric Imp
 //
 // SPDX-License-Identifier: MIT
 //
@@ -85,6 +85,10 @@ exports.builder = function (yargs) {
         [Options.BITBUCKET_SERVER_CONFIG] : {
             demandOption : false,
             describe : 'A path to a Bitbucket Server credentials file. A relative or absolute path can be used. The specified file may not exist.'
+        },
+        [Options.AZURE_REPOS_CONFIG] : {
+            demandOption : false,
+            describe : 'A path to an Azure Repos credentials file. A relative or absolute path can be used. The specified file may not exist.'
         },
         [Options.BUILDER_CONFIG] : {
             demandOption : false,
