@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added ###
 
+- Update Builder dependency to [EI-hosted v4.0.0](https://github.com/electricimp/Builder/releases/tag/4.0.0)
 - `impt build generate` command to output reproducible artifacts to a build folder
 - Setting of User-defined Environment Variables in `impt dg create` and `impt dg update` commands 
 - Support for ADO Repos as a file source for Builder. Includes:

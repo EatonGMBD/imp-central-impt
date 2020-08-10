@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/electricimp/imp-central-impt",
   "dependencies": {
-    "Builder": "^3.3.0",
+    "Builder": "^4.0.0",
     "cli-spinner": "^0.2.5",
     "colors": "^1.4.0",
     "dateformat": "^3.0.3",
