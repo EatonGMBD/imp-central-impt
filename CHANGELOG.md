@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+## [v3.0.1-etn] - 2020-08-13
+
 ### Fixed ###
 
 - Update Builder dependency to [EI-hosted v4.0.1](https://github.com/electricimp/Builder/releases/tag/4.0.1)
@@ -62,5 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Released] ##
 
+[v3.0.1-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.0.1-etn
 [v3.0.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.0.0-etn
 [v2.5.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v2.5.0-etn
