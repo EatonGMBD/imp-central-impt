@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+### Fixed ###
+
+- Update Builder dependency to [EI-hosted v4.0.1](https://github.com/electricimp/Builder/releases/tag/4.0.1)
+
 ## [v3.0.0-etn] - 2020-08-10
 
 ### Added ###
