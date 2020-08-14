@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+### Fixed ###
+
+- Suppress saving depenencies/directives so that that cache will work for `impt build` tasks
+
 ## [v3.0.1-etn] - 2020-08-13
 
 ### Fixed ###
