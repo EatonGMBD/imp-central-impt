@@ -753,12 +753,16 @@ The user is asked to confirm the operation, unless confirmed automatically with 
 ```
 impt build deploy [--account <account_id>] [--all] [--dg <DEVICE_GROUP_IDENTIFIER>] [--device-file <device_file>]
     [--agent-file <agent_file>] [--descr <build_description>] [--origin <origin>]
-    [--tag <tag>] [--flagged [true|false]] [--output <mode>] [--help]
+    [--tag <tag>] [--flagged [true|false]]
+    [--save-artifacts] [--use-artifacts]
+    [--output <mode>] [--help]
 ```
 
 Creates a build (Deployment) from the specified source files, with a description (if specified) and attributes (if specified), and deploys it to all the devices assigned to the specified Device Group.
 
 The command fails if one or both of the specified source files do not exist, or the specified Device Group does not exist.
+
+[Builder](https://github.com/electricimp/Builder) is called to preprocess the source files before the Deployment creation.
 
 The new build is not run until the devices are rebooted. To run it, call [`impt dg restart`](#device-group-restart) or [`impt device restart`](#device-restart).
 
@@ -773,6 +777,8 @@ The new build is not run until the devices are rebooted. To run it, call [`impt 
 | --origin | -o | No | Yes | A free-form key to store a link to the code’s storage location, eg. a GitHub repo name or URL |
 | --tag | -t | No | Yes | A tag applied to this build (Deployment). This option may be repeated multiple times to apply multiple tags |
 | --flagged | -f | No | No | If `true` or no value, this build (Deployment) cannot be deleted without first setting this option back to `false`. If `false` or the option is not specified, the build can be deleted |
+| --save-artifacts | -sa | No | No | Save artifacts used by Builder to preprocess the source files. The artifacts are saved in the following files in the local directory: `build/dependencies.agent.json` (for references to the repository files used in the agent code), `build/dependencies.device.json` (for references to the repository files used in the device code), `build/directives.agent.json` (for Builder variable definitions used in the agent code), `build/directives.device.json` (for Builder variable definitions used in the device code). See [‘Builder: Reproducible Artifacts’](https://github.com/electricimp/Builder#reproducible-artifacts) |
+| --use-artifacts | -ua | No | No | Reuse the saved Builder artifacts to preprocess the source files. The artifacts are loaded from the following files (if exist) in the local directory: `build/dependencies.agent.json` (for references to the repository files used in the agent code), `build/dependencies.device.json` (for references to the repository files used in the device code), `build/directives.agent.json` (for Builder variable definitions used in the agent code), `build/directives.device.json` (for Builder variable definitions used in the device code). See [‘Builder: Reproducible Artifacts’](https://github.com/electricimp/Builder#reproducible-artifacts) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 
@@ -877,6 +883,7 @@ The returned list of the builds may be filtered. Filtering uses any combination 
 impt build run [--account <account_id] [--all] [--dg <DEVICE_GROUP_IDENTIFIER>] [--device-file <device_file>]
     [--agent-file <agent_file>] [--descr <build_description>]
     [--origin <origin>] [--tag <tag>] [--flagged [true|false]]
+    [--save-artifacts] [--use-artifacts]
     [--conditional] [--log [<timestamp_format>]] [--output <mode>] [--help]
 ```
 
@@ -885,6 +892,8 @@ Creates, deploys and runs a build (Deployment). Optionally, displays logs of the
 It behaves exactly like [`impt build deploy`](#build-deploy) followed by [`impt dg restart`](#device-group-restart) and, optionally, by [`impt log stream`](#log-stream).
 
 The command fails if one or both of the specified source files do not exist, or the specified Device Group does not exist. Informs the user if the specified Device Group does not have assigned devices; in this case, the Deployment is created anyway.
+
+[Builder](https://github.com/electricimp/Builder) is called to preprocess the source files before the Deployment creation.
 
 | Option | Alias | Mandatory? | Value Required? | Description |
 | --- | --- | --- | --- | --- |
@@ -897,6 +906,8 @@ The command fails if one or both of the specified source files do not exist, or 
 | --origin | -o | No | Yes | A free-form key to store the source location of the code |
 | --tag | -t | No | Yes | A tag applied to this build (Deployment). This option may be repeated multiple times to apply multiple tags |
 | --flagged | -f | No | No | If `true` or no value is supplied, this build (Deployment) cannot be deleted without first setting this option back to `false`. If `false` or the option is not specified, the build can be deleted |
+| --save-artifacts | -sa | No | No | Save artifacts used by Builder to preprocess the source files. The artifacts are saved in the following files in the local directory: `build/dependencies.agent.json` (for references to the repository files used in the agent code), `build/dependencies.device.json` (for references to the repository files used in the device code), `build/directives.agent.json` (for Builder variable definitions used in the agent code), `build/directives.device.json` (for Builder variable definitions used in the device code). See [‘Builder: Reproducible Artifacts’](https://github.com/electricimp/Builder#reproducible-artifacts) |
+| --use-artifacts | -ua | No | No | Reuse the saved Builder artifacts to preprocess the source files. The artifacts are loaded from the following files (if exist) in the local directory: `build/dependencies.agent.json` (for references to the repository files used in the agent code), `build/dependencies.device.json` (for references to the repository files used in the device code), `build/directives.agent.json` (for Builder variable definitions used in the agent code), `build/directives.device.json` (for Builder variable definitions used in the device code). See [‘Builder: Reproducible Artifacts’](https://github.com/electricimp/Builder#reproducible-artifacts) |
 | --conditional | -c | No | No | Trigger a conditional restart of the devices assigned to the specified Device Group instead of a normal restart (see the impCentral API specification) |
 | --log | -l | No | No | Starts displaying logs from the devices assigned to the specified Device Group (see the [`impt log stream`](#log-stream) description). To stop displaying the logs, press *Ctrl-C*. Optional value specifies the [format of timestamps in the logs](#timestamp-format-in-logs) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -1993,8 +2004,10 @@ Updates the specified webhook with a new target URL and/or MIME content-type. Fa
 | -q | --confirmed |
 | -r | --azure-repos-config, --create-target, --remove-tag, --remove, --region |
 | -s | --descr, --sha, --page-size, --stop-on-fail |
+| -sa | --save-artifacts |
 | -t | --tag, --timeout, --temp, --target, --to, --tests |
 | -u | --user, --full, --unflagged, --unflag, --unassigned, --unbond, --url, --dut |
+| -ua | --use-artifacts |
 | -v | --version |
 | -w | --wh, --pwd, --create-dut |
 | -x | --device-file |
