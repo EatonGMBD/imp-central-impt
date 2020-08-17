@@ -787,7 +787,8 @@ The new build is not run until the devices are rebooted. To run it, call [`impt 
 ```
 impt build generate [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>]
     [--device-file <device_file>] [--agent-file <agent_file>]
-    [--origin <origin>] [--output <mode>] [--help]
+    [--origin <origin>] [--save-artifacts] [--use-artifacts]
+    [--output <mode>] [--help]
 ```
 
 Generates a build artifact from the specified source files, and outputs the artifacts to the build folder.
@@ -803,6 +804,8 @@ No deployment is run as a part of this command, only the reusable assets are gen
 | --device-file | -x | No | Yes | The device source code file name. If not specified, the file referenced by the [Project file](#project-files) in the current directory is used; if there is no Project file, empty code is used. If the specified file does not exist, the command fails |
 | --agent-file | -y | No | Yes | The agent source code file name. If not specified, the file referenced by the [Project file](#project-files) in the current directory is used; if there is no Project file, empty code is used. If the specified file does not exist, the command fails |
 | --origin | -o | No | Yes | A free-form key to store a link to the code’s storage location, eg. a GitHub repo name or URL |
+| --save-artifacts | -sa | No | No | Save artifacts used by Builder to preprocess the source files. The artifacts are saved in the following files in the local directory: `build/dependencies.agent.json` (for references to the repository files used in the agent code), `build/dependencies.device.json` (for references to the repository files used in the device code), `build/directives.agent.json` (for Builder variable definitions used in the agent code), `build/directives.device.json` (for Builder variable definitions used in the device code). See [‘Builder: Reproducible Artifacts’](https://github.com/electricimp/Builder#reproducible-artifacts) |
+| --use-artifacts | -ua | No | No | Reuse the saved Builder artifacts to preprocess the source files. The artifacts are loaded from the following files (if exist) in the local directory: `build/dependencies.agent.json` (for references to the repository files used in the agent code), `build/dependencies.device.json` (for references to the repository files used in the device code), `build/directives.agent.json` (for Builder variable definitions used in the agent code), `build/directives.device.json` (for Builder variable definitions used in the device code). See [‘Builder: Reproducible Artifacts’](https://github.com/electricimp/Builder#reproducible-artifacts) |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |
 

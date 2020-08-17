@@ -54,6 +54,8 @@ exports.builder = function (yargs) {
                 ' if there is no Project file, empty code is used. If the specified file does not exist, the command fails.'
         },
         [Options.ORIGIN] : false,
+        [Options.SAVE_ARTIFACTS] : false,
+        [Options.USE_ARTIFACTS] : false,
         [Options.OUTPUT] : false
     });
     return yargs
