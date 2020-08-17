@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+### Added ###
+
+- `--save-artifacts` and `--use-artifacts` options in:
+  - `impt build deploy`
+  - `impt build run`
+  - `impt build generate`
+
 ## [v3.0.1-etn] - 2020-08-13
 
 ### Fixed ###
