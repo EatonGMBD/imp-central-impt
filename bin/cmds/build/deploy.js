@@ -66,6 +66,8 @@ exports.builder = function (yargs) {
             demandOption : false,
             describe : 'Run build for all device groups in project file.'
         },
+        [Options.SAVE_ARTIFACTS] : false,
+        [Options.USE_ARTIFACTS] : false,
         [Options.OUTPUT] : false
     });
     return yargs
