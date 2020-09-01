@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+## [v3.1.0-etn] - 2020-09-01
+
 ### Added ###
 
 - `--save-artifacts` and `--use-artifacts` options in:
@@ -71,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Released] ##
 
+[v3.1.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.1.0-etn
 [v3.0.1-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.0.1-etn
 [v3.0.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.0.0-etn
 [v2.5.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v2.5.0-etn
