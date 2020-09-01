@@ -60,6 +60,8 @@ exports.builder = function (yargs) {
         [Options.ORIGIN] : false,
         [Options.TAG] : false,
         [Options.FLAGGED] : false,
+        [Options.SAVE_ARTIFACTS] : false,
+        [Options.USE_ARTIFACTS] : false,
         [Options.CONDITIONAL] : {
             demandOption : false,
             describe : 'Trigger a conditional restart of the devices assigned to the specified Device Group instead of a normal restart.'
