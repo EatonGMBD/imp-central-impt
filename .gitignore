@@ -9,3 +9,4 @@ bin/cmds/.DS_Store
 .impt.auth
 
 .vscode
+.env
