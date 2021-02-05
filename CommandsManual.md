@@ -382,7 +382,12 @@ Each project file contains the following:
 - Global Builder section: includes:
     - `variables` which are used by all device groups.
     - `libs` which are `.js` files that contain some functions used by builder variables.
-    - `preBuild` and `postBuild` which are commands or `.js` files that are executed before and after building the code.
+    - `preBuild` which is an array of shell commands that are executed before bulding the code.
+    - `postDeviceBuild` which is an array of shell commands that are executed
+      after building the device code (including when running tests). The path of
+      the source code file to be post-processed is available to be interpolated
+      with `${DEVICE_CODE_PATH}` like this: `"postDeviceBuild": ["processFile.sh
+      ${DEVICE_CODE_PATH}"],`
 - Device Groups: Each device group is a key-value pair where the key is the device group ID and the value is an object containing the following information:
     - `endpoint`: an impCentral API endpoint (the API base URL).
     - `accountID`: the account ID that the device group belongs to.
@@ -425,9 +430,9 @@ The project file is of the form:
             "node prebuild1.js",
             "echo 'prebuild2'"
         ],
-        "postBuild": [
-            "echo 'postbuild1'",
-            "echo 'postbuild2'"
+        "postDeviceBuild": [
+            "echo 'postbuild1: ${DEVICE_CODE_PATH}'",
+            "echo 'postbuild2: ${DEVICE_CODE_PATH}'"
         ]
       },
       "isDefault": true
@@ -446,9 +451,9 @@ The project file is of the form:
             "node prebuild1.js",
             "echo 'prebuild2'"
         ],
-        "postBuild": [
-            "echo 'postbuild1'",
-            "echo 'postbuild2'"
+        "postDeviceBuild": [
+            "echo 'postbuild1: ${DEVICE_CODE_PATH}'",
+            "echo 'postbuild2: ${DEVICE_CODE_PATH}'"
         ]
       }
     }
