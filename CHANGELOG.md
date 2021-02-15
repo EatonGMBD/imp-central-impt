@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - a `postDeviceBuild` step (similar to `preBuild`) for post processing the built
   device code (used in tests also).
 
+### Fixed ###
+
+- Updated to an unreleased version of impUnit that contains the following:
+  - assertDeepEqual now works with blobs
+  - fixed a bug in the path that assertDeepEqual displays when there's a failure
+
 ## [v3.1.0-etn] - 2020-09-01
 
 ### Added ###
