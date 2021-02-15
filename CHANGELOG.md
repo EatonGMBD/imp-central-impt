@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+## [v3.2.0-etn] - 2020-02-15
+### Added ###
+
+- a `postDeviceBuild` step (similar to `preBuild`) for post processing the built
+  device code (used in tests also).
+
+### Fixed ###
+
+- Updated to an unreleased version of impUnit that contains the following:
+  - assertDeepEqual now works with blobs
+  - fixed a bug in the path that assertDeepEqual displays when there's a failure
+
 ## [v3.1.0-etn] - 2020-09-01
 
 ### Added ###
@@ -28,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update Builder dependency to [EI-hosted v4.0.0](https://github.com/electricimp/Builder/releases/tag/4.0.0)
 - `impt build generate` command to output reproducible artifacts to a build folder
-- Setting of User-defined Environment Variables in `impt dg create` and `impt dg update` commands 
+- Setting of User-defined Environment Variables in `impt dg create` and `impt dg update` commands
 - Support for ADO Repos as a file source for Builder. Includes:
   - `impt auth azure-repos` command
   - `impt test azure-repos` command
@@ -60,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "global-agent" NodeJS module is used for logs streaming over proxy
 - "yargs" NodeJS module version 10.0.3 is required for processing entity IDs which start with "-"
 - Logs are colorized (similar to impCentral IDE) in the default and "debug" output modes
-- If logs are streamed from one device only, Device Id is not displayed in logs in the default and "minimal" output modes 
+- If logs are streamed from one device only, Device Id is not displayed in logs in the default and "minimal" output modes
 - `--device` (`-d`) option may be repeated several times to specify multiple devices in the following commands:
   - `impt device assign`
   - `impt device unassign`
@@ -73,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Released] ##
 
+[v3.2.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.2.0-etn
 [v3.1.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.1.0-etn
 [v3.0.1-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.0.1-etn
 [v3.0.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.0.0-etn
