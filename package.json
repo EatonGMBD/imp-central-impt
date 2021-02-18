@@ -1,6 +1,6 @@
 {
   "name": "imp-central-impt",
-  "version": "2.7.0",
+  "version": "3.3.0-etn",
   "description": "impt - command line tool for the Electric Imp impCentral API",
   "main": "bin/impt",
   "engines": {
