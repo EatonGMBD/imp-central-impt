@@ -1,5 +1,5 @@
 [submodule "lib/impUnit"]
 	path = lib/impUnit
-	url = https://github.com/electricimp/impUnit.git
+	url = https://github.com/EatonGMBD/impUnit.git
 	branch = develop
 

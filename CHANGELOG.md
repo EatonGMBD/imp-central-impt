@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+### Fixed ###
+
+- Updated to an unreleased version of a impUnit fork that contains the following:
+  - assertDeepEqual now supports a default equality function that can be provided in this.assertDeepEqual
+
 ## [v3.2.0-etn] - 2020-02-15
+
 ### Added ###
 
 - a `postDeviceBuild` step (similar to `preBuild`) for post processing the built
