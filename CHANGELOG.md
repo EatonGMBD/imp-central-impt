@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] ##
 
+## [v3.4.0-etn] - 2022-01-26
+
+### Changed ###
+
+
+- Update Builder dependency to [Eaton-hosted v4.1.0-etn](https://github.com/EatonGMBD/Builder/releases/tag/v4.1.0-etn)
+
 ## [v3.3.0-etn] - 2020-02-18
 
 ### Fixed ###
@@ -94,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Released] ##
 
+[v3.4.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.4.0-etn
 [v3.3.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.3.0-etn
 [v3.2.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.2.0-etn
 [v3.1.0-etn]: https://github.com/EatonGMBD/imp-central-impt/releases/tag/v3.1.0-etn
