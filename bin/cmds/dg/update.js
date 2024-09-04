@@ -69,13 +69,14 @@ exports.builder = function (yargs) {
         },
         [Options.LOAD_CODE_AFTER_BLESSING] : false,
         [Options.MIN_SUPPORTED_DEPLOYMENT] : false,
+        [Options.OUTPUT] : false,
+        [Options.ENV_VARIABLE] : false,
         [Options.ENVVARS] : {
             demandOption : false,
             describe : 'A path to a file with User-defined Environment Variables (__VARS). A relative or absolute path can be used.' +
                 ' The file should contain a valid json object with the specified variables.' +
                 ' An empty file or an empty json object deletes the variable.'
-        },
-        [Options.OUTPUT] : false
+        }
     });
     return yargs
         .usage(Options.getUsage(COMMAND_SECTION, COMMAND, COMMAND_DESCRIPTION, Options.getCommandOptions(options)))

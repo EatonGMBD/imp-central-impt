@@ -1117,6 +1117,7 @@ The user is asked to confirm the operation if any Deployment is going to be dele
 impt dg create [--account <account_id>] --name <device_group_name> [--dg-type <device_group_type>]
     [--product <PRODUCT_IDENTIFIER>] [--descr <device_group_description>]
     [--dut <DEVICE_GROUP_IDENTIFIER>] [--target <DEVICE_GROUP_IDENTIFIER>]
+    [--env-variable <user-env-variable>] 
     [--region <region_name>] [--envvars <envvars_file_name>]
     [--output <mode>] [--help]
 ```
@@ -1132,6 +1133,7 @@ Creates a new Device Group for the specified Product. Fails if a Device Group wi
 | --descr | -s | No | Yes | An optional description of the Device Group |
 | --dut | -u | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target device-under-test Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *dut* or *pre-dut*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --target | -t | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target production Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *production* or *pre-production*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
+| --env-variable | -e | No | Yes | Custom variables that can be used in the Device Group's code. Only Owners have permissions to edit. Must be valid JSON and enclosed in single quotes. Keys must be alphanumeric, and start with a letter. Values must be strings or numbers. A new deployment will need to be created, and devices restarted |
 | --region | -r | No | Yes | A region. May be specified if the new Device Group is of the *production* or *pre-production* [type](#device-group-type) only |
 | --envvars | -e | No | Yes | A path to a file with [User-defined Environment Variables (__VARS)](https://developer.electricimp.com/tools/impcentral/environmentvariables). A relative or absolute path can be used. The file should contain a valid json object with the specified variables |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -1140,10 +1142,10 @@ Creates a new Device Group for the specified Product. Fails if a Device Group wi
 #### Device Group Delete ####
 
 ```
-impt dg delete [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--builds] [--force] [--confirmed] [--output <mode>] [--help]
+impt dg delete [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--force] [--confirmed] [--output <mode>] [--help]
 ```
 
-Deletes the specified Device Group and, optionally, all of the related builds (Deployments).
+Deletes the specified Device Group and all of the related builds (Deployments).
 
 The command fails if the Device Group is a device-under-test target or production target of another Device Group. Use either [`impt dg update`](#device-group-update) to update the the other Device Group’s target/dut, or `impt dg delete` to delete the other Device Group before the specified one.
 
@@ -1158,7 +1160,6 @@ The user is asked to confirm the operation, unless confirmed automatically with 
 | --- | --- | --- | --- | --- |
 | --account | -ac | No | Yes | The authenticated account identifier: an account ID |
 | --dg | -g | Yes/[Project](#project-files) | Yes | A [Device Group identifier](#device-group-identifier). If not specified, the Device Group referenced by the [Project file](#project-files) in the current directory is used (if there is no Project file, the command fails) |
-| --builds | -b | No | No | Additionally deletes all Deployments related to the Device Group |
 | --force | -f | No | No | Unassigns all of the Device Group’s devices as with [`impt dg unassign`](#device-group-unassign), and set the *flagged* attribute to `false` for all of the Device Group’s Deployments |
 | --confirmed | -q | No | No | Executes the operation without asking additional confirmation from user |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
@@ -1263,6 +1264,7 @@ impt dg update [--account <account_id>] [--dg <DEVICE_GROUP_IDENTIFIER>] [--name
     [--descr <device_group_description>]
     [--dut <DEVICE_GROUP_IDENTIFIER>] [--target <DEVICE_GROUP_IDENTIFIER>]
     [--load-code-after-blessing [true|false]]
+    [--env-variable <user-env-variable>]  
     [--min-supported-deployment <BUILD_IDENTIFIER>] [--envvars <envvars_file_name>]
     [--output <mode>] [--help]
 ```
@@ -1279,6 +1281,7 @@ Updates the specified Device Group. Fails if the specified Device Group does not
 | --target | -t | No | Yes | The [Device Group identifier](#device-group-identifier) of the new Device Group’s target production Device Group. Should only be specified for *factory* or *pre-factory* Device Groups. The target Device Group must be of the corresponding [type](#device-group-type) *production* or *pre-production*, and belong to the same Product as the specified Device Group. Otherwise the command fails |
 | --load-code-after-blessing | -l | No | No | Only applicable to *production* and *pre-production* Device Groups. If `true` or no value is supplied, production application code is immediately loaded by the device after blessing. If `false`, production code will be loaded when the device first connects as part of BlinkUp. Newly created Production Device Groups default this setting to `true` |
 | --min-supported-deployment | -m | No | Yes | The [Build identifier](#build-identifier) of the new *min_supported_deployment* (see the impCentral API specification). The Deployment should belong to this Device Group and should be newer than the current *min_supported_deployment* |
+| --env-variable | -e | No | Yes | Custom variables that can be used in the Device Group's code. Only Owners have permissions to edit. Must be valid JSON and enclosed in single quotes. Keys must be alphanumeric, and start with a letter. Values must be strings or numbers. A new deployment will need to be created, and devices restarted |
 | --envvars | -e | No | Yes | A path to a file with [User-defined Environment Variables (__VARS)](https://developer.electricimp.com/tools/impcentral/environmentvariables). A relative or absolute path can be used. The file should contain a valid json object with the specified variables. An empty file or an empty json object deletes the variable |
 | --output | -z | No | Yes | Adjusts the [command’s output](#command-output) |
 | --help | -h | No | No | Displays a description of the command. Ignores any other options |

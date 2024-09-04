@@ -50,7 +50,7 @@ Call `impt --version` or `impt -v` to display the version of the installed *impt
 
 ```bash
 > impt --version
-2.5.2
+2.5.4
 ```
 
 ## Proxy Setup ##

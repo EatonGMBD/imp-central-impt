@@ -1,6 +1,6 @@
 {
   "name": "imp-central-impt-eaton",
-  "version": "3.4.0-etn",
+  "version": "3.5.0-etn",
   "description": "impt - command line tool for the Electric Imp impCentral API",
   "main": "bin/impt",
   "engines": {
@@ -34,31 +34,32 @@
   },
   "homepage": "https://github.com/electricimp/imp-central-impt",
   "dependencies": {
-    "Builder": "git://github.com/EatonGMBD/Builder.git#v4.1.0-etn",
-    "cli-spinner": "^0.2.5",
+    "Builder": "EatonGMBD/Builder#update-from-original",
+    "@hapi/hoek": "^11.0.4",
+    "cli-spinner": "^0.2.10",
     "colors": "^1.4.0",
     "dateformat": "^3.0.3",
-    "deepmerge": "^3.2.0",
-    "glob": "^7.1.3",
-    "global-agent": "^2.1.8",
-    "hoek": "^6.0.2",
+    "glob": "^7.2.3",
     "imp-central-api": "^1.7.0",
-    "lodash": "^4.17.11",
-    "osenv": "^0.1.3",
-    "prompt-sync": "^4.1.6",
-    "random-words": "^1.1.0",
-    "randomstring": "^1.1.3",
+    "lodash": "^4.17.21",
+    "osenv": "^0.1.5",
+    "prompt-sync": "4.1.6",
+    "random-words": "1.1.0",
+    "randomstring": "^1.1.5",
+    "sprintf-js": "^1.1.3",
+    "yargs": "^12.0.5",
+    "deepmerge": "^3.2.0",
+    "global-agent": "^2.1.8",
     "shelljs": "^0.8.3",
-    "sprintf-js": "^1.0.3",
-    "tmp": "^0.2.1",
-    "yargs": "10.0.3"
+    "tmp": "^0.2.1"
   },
   "scripts": {
     "test": "jasmine"
   },
   "devDependencies": {
-    "jasmine": "^3.4.0",
-    "jasmine-expect": "^4.0.1"
+    "jasmine": "3.4.0",
+    "jasmine-expect": "latest",
+    "shelljs": "latest"
   },
   "yargs": {
     "short-option-groups": false
